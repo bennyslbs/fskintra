@@ -11,6 +11,7 @@ import getpass
 import optparse
 import time
 import re
+import json
 
 ROOT = os.path.expanduser('~/.skoleintra/')
 DEFAULT_FN = os.path.join(os.path.dirname(__file__), 'default.inf')
@@ -223,6 +224,12 @@ try:
     SMTPPORT = softGet(cfg, 'default', 'smtpport')
     SMTPLOGIN = softGet(cfg, 'default', 'smtplogin')
     SMTPPASS = softGet(cfg, 'default', 'smtppassword')
+    LEKTIEIDS = softGet(cfg, 'default', 'lektieids')
+    if re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', LEKTIEIDS):
+        # Shall be on list form [num, num, num]
+        LEKTIEIDS = json.loads(LEKTIEIDS)
+    else:
+        LEKTIEIDS = []
 except ConfigParser.NoOptionError, e:
     parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s.
 Kør først programmet med --config for at sætte det op.

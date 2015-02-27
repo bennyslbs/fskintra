@@ -8,6 +8,7 @@ import skoleintra.pgDialogue
 import skoleintra.pgDocuments
 import skoleintra.pgFrontpage
 import skoleintra.pgWeekplans
+import skoleintra.pgLektier
 import skoleintra.schildren
 
 cnames = skoleintra.schildren.skoleGetChildren()
@@ -18,3 +19,5 @@ for cname in cnames:
     skoleintra.pgDialogue.skoleDialogue()
     skoleintra.pgDocuments.skoleDocuments()
     skoleintra.pgWeekplans.skoleWeekplans()
+
+skoleintra.pgLektier.getLektieLister()

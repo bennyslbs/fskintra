@@ -41,10 +41,8 @@ def wpParseLektier(bs):
                 if entr[0] != None and entr[1] != None:
                     fag[entr[0]] = entr[1]
             res.append({
+                'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
                 'weekday' : match_date.group('weekday'),
-                'year' : int(match_date.group('year')),
-                'month' : int(match_date.group('month')),
-                'day' : int(match_date.group('day')),
                 'lektier' : fag,
                 'attachments' : attachments,
             })
@@ -89,7 +87,8 @@ def shortWeekdayString(date):
 def wpOrgPrintLektier(title, lektier):
     res = '**' + title + "\n"
     for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
-        res += "*** %s d. %4d.%02d.%02d\n" % (lektier[i]['weekday'], lektier[i]['year'], lektier[i]['month'], lektier[i]['day'])
+        res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
+        
         for fag, lektie in lektier[i]['lektier'].items():
             res += '- ' + beautifyFagName(fag) + ': ' + lektie + "\n"
     return res
@@ -103,7 +102,7 @@ def wpFormatSMSLektier(title, lektier, days):
     otherDate = datetime.date(2015, 12, 31)
     # Tomorrow
     for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
-        lektieDay = datetime.date(lektier[i]['year'], lektier[i]['month'], lektier[i]['day'])
+        lektieDay = lektier[i]['day']
         delta = (lektieDay - today).days
         if (delta >= 1 and delta <= days):
             # Print date info, differs depending how many days from now

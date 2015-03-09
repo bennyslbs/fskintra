@@ -88,23 +88,33 @@ def wpOrgPrintLektier(title, lektier):
     res = '**' + title + "\n"
     for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
-        
         for fag, lektie in lektier[i]['lektier'].items():
             res += '- ' + beautifyFagName(fag) + ': ' + lektie + "\n"
     return res
 
-def wpFormatSMSLektier(title, lektier, days):
+def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
+    '''Format compact string intended for SMS with lektier for days,
+    extend so that lektier for minMsgDays is returned'''
     res = ''
     weekday = datetime.date.today().isoweekday()
-    if weekday == 5 and days < 7: # It's friday, add 2 days to days if <7
+    # If first weekend is included in days - add 2 days
+    if ((weekday == 5)
+        and (weekday == 4 and days > 1)
+        and (weekday == 3 and days > 2)
+        and (weekday == 2 and days > 3)
+        and (weekday == 1 and days > 4)
+    ):
         days += 2
+    # For each following weekend, add 2 days
+    if days > 7:
+        days += 2 * int((days -7)/5) # -7 since first week is handled special above
     today = datetime.date.today()
-    otherDate = datetime.date(2015, 12, 31)
-    # Tomorrow
+    msgDays = 0;
     for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
         lektieDay = lektier[i]['day']
         delta = (lektieDay - today).days
-        if (delta >= 1 and delta <= days):
+        if delta >= 1 and (delta <= days or msgDays < minMsgDays):
+            msgDays += 1
             # Print date info, differs depending how many days from now
             if delta == 1:
                 # Tomorrow - no date info
@@ -137,7 +147,23 @@ def skoleLektier(id):
         fh.close()
     title, lektier = wpParseLektier(bs)
     print wpOrgPrintLektier(title, lektier)
-    print wpFormatSMSLektier(title, lektier, 1)
+    print wpFormatSMSLektier(title, lektier, 1, 1)
+
+def skoleLektierSmsTxt(id, days, min_msgs_days=0):
+    global bs
+
+    # surllib.skoleLogin()
+    config.log(u'Kigger efter nye lektier for id %d' % id)
+
+    # read the initial page
+    bs = surllib.skoleGetURL(URL_MAIN + "ID=%d" % id, True, True)
+
+    if True:
+        fh = open('/tmp/a.html', 'w')
+        fh.write(str(bs))
+        fh.close()
+    title, lektier = wpParseLektier(bs)
+    return wpFormatSMSLektier(title, lektier, days, min_msgs_days)
 
 def getLektieLister(lektieIds):
     if len(lektieIds) == 0:

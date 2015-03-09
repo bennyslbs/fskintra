@@ -48,6 +48,10 @@ parser.add_option(
     '-q',  '--quiet', action='append_const', const=-1, dest='verbosity',
     help=u'Skriv færre log-linjer')
 
+parser.add_option(
+    '--sms', dest='sms', default=None,
+    help='Send SMS jfr. konfiguration i [sms-<smsvalue>] sektionen i konfigurationsfilen')
+
 (options, args) = parser.parse_args()
 
 if args:
@@ -69,7 +73,7 @@ if options.doconfig and options.password is not None:
     parser.error(u'''--config og --password kan ikke bruges samtidigt''')
 
 SKIP_CACHE = options.skipcache
-
+SMS = options.sms
 
 def ensureDanish():
     '''Ensure that we can do Danish letters on stderr, stdout by wrapping
@@ -241,6 +245,22 @@ MSG_DN = os.path.join(ROOT, CACHEPREFIX + 'msg')
 for dn in (CACHE_DN, MSG_DN):
     if not os.path.isdir(dn):
         os.makedirs(dn)
+
+
+# SMS
+if options.sms is not None:
+    sms_grp = 'sms-'+options.sms
+    try:
+        SMS_GW = cfg.get(sms_grp, 'gw')
+        SMS_KEY = cfg.get(sms_grp, 'key')
+        SMS_ID = int(cfg.get(sms_grp, 'lektieid'))
+        SMS_DAYS = int(cfg.get(sms_grp, 'days'))
+        SMS_MIN_MSGS_DAYS = int(cfg.get(sms_grp, 'min_msgs_days'))
+        SMS_FROM = cfg.get(sms_grp, 'from')
+        SMS_TO = cfg.get(sms_grp, 'to')
+    except ConfigParser.NoOptionError, e:
+        parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.
+    Ret direkte i '%s'.''' % (CONFIG_FN, e.option, sms_grp, CONFIG_FN))
 
 #
 # Ensure that SMTP options are sane

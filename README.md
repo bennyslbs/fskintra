@@ -12,6 +12,7 @@ flg. steder:
 * Dialog/beskeder: Nye beskeder (både sendt og modtaget)
 * Arkiv/dokumenter: Nye dokumenter
 * Ugeplaner: Nye ugeplaner
+* Lektier: Ikke på Email, men se nedenfor.
 
 Alle emails bliver gemt, dvs. du får kun en email, såfremt der faktisk
 er kommet nyt.
@@ -81,6 +82,41 @@ zip-filen, eller endnu bedre ved at bruge git
 Kør følgende kommando, og besvar spørgsmålene
 
     fskintra.py --config
+
+Ønskes info om lektier, skal dette opsættes manuelt
+i configurationsfilen, ~/.skoleintra/skoleintra.txt:
+Indsæt linie:
+    lektieids=[1, 2, 3]
+hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
+
+Ønskes SMS med info om lektier, skal der oprettes en sektion som denne
+for hver barn der skal have en SMS.
+
+Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med lektier.
+
+- navn: Id på SMS-gruppen.
+- gw: SMS gateway, pt. kun understøttelse for smsit.dk
+- kEY1234: key som oplyses af SMS gateway udbyder
+- lektieid: Eer id - se lektieids ovenfor
+- days: Antal skoledage der skal sendes lektier for
+- min_msgs_days: Minimum antal dage med lektier der skal sendes for (hvis der ikke er lektier til hver dag)
+- from: Tekst der angiver afsender (max 11 bgstaver, nogle telefoner/udbydere fjerner mellemrum)
+- to: Modtager nr. +45 bliver automatisk sat foran, og må ikke være inkluderet her.
+
+Skal der sendes SMS til flere børn skal der oprettes flere [sms-navnXX] grupper.
+
+For at sende en SMS oprettes der er cronjob, der kalder
+"/sti/til/fskintra.py --sms navn", og kører som dig, eller en anden
+bruger der har ~/.skoleintra/skoleintra.txt.
+
+    [sms-navn]
+    gw=smsit.dk
+    key=kEY1234
+    lektieid=1
+    days=1
+    min_msgs_days=1
+    from=Lektier
+    to=12345678
 
 Til slut testes programmet ved at køre det
 

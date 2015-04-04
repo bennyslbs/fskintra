@@ -71,7 +71,7 @@ def sendSmsMsg(to, msg):
         else:
             status = 28
     else:
-        retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ config.SMS_GW + '". Implementer det i pgLektieSMS.py'
+        retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ config.SMS_GW + '". Implementer det i sendSmsMsg i pgLektieSender.py'
 
     # Send SMS if non-empty
     return status, u'Info: SMS sendt til [%s]: %s med status %d (%s).' % ('sms-'+config.SMS, to, status, statusStr)

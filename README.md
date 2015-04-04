@@ -95,28 +95,56 @@ for hver barn der skal have en SMS.
 Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med lektier.
 
 - navn: Id på SMS-gruppen.
-- gw: SMS gateway, pt. kun understøttelse for smsit.dk
+- gw: SMS gateway, pt. kun understøttelse for smsit.dk og
+  android app (https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway)
 - kEY1234: key som oplyses af SMS gateway udbyder
 - lektieid: Eer id - se lektieids ovenfor
 - days: Antal skoledage der skal sendes lektier for
 - min_msgs_days: Minimum antal dage med lektier der skal sendes for (hvis der ikke er lektier til hver dag)
 - from: Tekst der angiver afsender (max 11 bgstaver, nogle telefoner/udbydere fjerner mellemrum)
-- to: Modtager nr. +45 bliver automatisk sat foran, og må ikke være inkluderet her.
 
-Skal der sendes SMS til flere børn skal der oprettes flere [sms-navnXX] grupper.
+  Bruges kun for nogle SMS Gateways (ikke for afsendelse fra SMS
+  kort/alm. tlf. abonnement, men for smsit.dk
+- to: Liste med Modtagere, emailadresser og mobilnr.
+  nr. +45 bliver automatisk sat foran (hvis krævet), og må ikke være inkluderet her.
+
+Skal der sendes SMS/email til flere klasser skal der oprettes flere
+[sms-navnXX] grupper.
+
+Alle emails sendes som een email, pt. sendes til Bcc adresser, men
+dette kan blive ændret uden varsel.
 
 For at sende en SMS oprettes der er cronjob, der kalder
 "/sti/til/fskintra.py --sms navn", og kører som dig, eller en anden
 bruger der har ~/.skoleintra/skoleintra.txt.
 
+    [smsgw-xxx]
+    # Supported gw's:
+    # sms_gw=smsit.dk
+    #    needs sms_key=<password key>
+    # sms_gw=eu.apksoft.android.smsgateway
+    #    needs sms_key=<password> (not tested without)
+    #    See https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
+    # Ex.:
+    [smsgw-1]
+    gw=eu.apksoft.android.smsgateway
+    url=http://1.2.3.4:9090/sendsms
+    key=MyPassWord
+
     [sms-navn]
-    gw=smsit.dk
-    key=kEY1234
+    gw=smsgw-1
     lektieid=1
     days=1
     min_msgs_days=1
     from=Lektier
-    to=12345678
+    to=
+    	# Peter
+	Peter Pedersen <peter@example.org>
+	12345678
+	# Peters forældre
+	hjemme_v_peter@example.org
+	# Søren
+	soren@example.org
 
 Til slut testes programmet ved at køre det
 

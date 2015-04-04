@@ -9,7 +9,7 @@ import skoleintra.pgDocuments
 import skoleintra.pgFrontpage
 import skoleintra.pgWeekplans
 import skoleintra.pgLektier
-import skoleintra.pgLektieSms
+import skoleintra.pgLektieSender
 import skoleintra.schildren
 
 cnames = skoleintra.schildren.skoleGetChildren()
@@ -24,4 +24,4 @@ for cname in cnames:
 #skoleintra.pgLektier.getLektieLister(skoleintra.config.LEKTIEIDS)
 
 if skoleintra.config.SMS:
-    exit(skoleintra.pgLektieSms.sendSms())
+    exit(skoleintra.pgLektieSender.sendEmailSms())

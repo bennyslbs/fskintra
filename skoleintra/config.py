@@ -50,7 +50,7 @@ parser.add_option(
 
 parser.add_option(
     '--sms', dest='sms', default=None,
-    help='Send SMS jfr. konfiguration i [sms-<smsvalue>] sektionen i konfigurationsfilen')
+    help='Send SMS + Email jfr. konfiguration i [sms-<smsvalue>] sektionen i konfigurationsfilen')
 
 (options, args) = parser.parse_args()
 
@@ -234,6 +234,7 @@ try:
         LEKTIEIDS = json.loads(LEKTIEIDS)
     else:
         LEKTIEIDS = []
+
 except ConfigParser.NoOptionError, e:
     parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s.
 Kør først programmet med --config for at sætte det op.
@@ -246,13 +247,24 @@ for dn in (CACHE_DN, MSG_DN):
     if not os.path.isdir(dn):
         os.makedirs(dn)
 
+# Get SMSGW
+def getSmsGw(section):
+    global SMS_GW
+    global SMS_KEY
+    global SMS_URL
+    try:
+        SMS_GW = cfg.get(section, 'gw')
+        SMS_KEY = softGet(cfg, section, 'key')
+        SMS_URL = softGet(cfg, section, 'url')
+    except ConfigParser.NoOptionError, e:
+        parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.
+    Ret direkte i '%s'.''' % (CONFIG_FN, e.option, section, CONFIG_FN))
 
 # SMS
 if options.sms is not None:
     sms_grp = 'sms-'+options.sms
     try:
-        SMS_GW = cfg.get(sms_grp, 'gw')
-        SMS_KEY = cfg.get(sms_grp, 'key')
+        getSmsGw(cfg.get(sms_grp, 'gw'))
         SMS_ID = int(cfg.get(sms_grp, 'lektieid'))
         SMS_DAYS = int(cfg.get(sms_grp, 'days'))
         SMS_MIN_MSGS_DAYS = int(cfg.get(sms_grp, 'min_msgs_days'))

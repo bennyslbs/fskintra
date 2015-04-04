@@ -85,7 +85,7 @@ def shortWeekdayString(date):
         return u'?'
 
 def wpOrgPrintLektier(title, lektier):
-    res = '**' + title + "\n"
+    res = '** ' + title + "\n"
     for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():
@@ -132,7 +132,7 @@ def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
     res = res.rstrip() # Remove trailing \n
     return res
 
-def skoleLektier(id):
+def skoleLektier(id, sms_days=1, sms_min_msgs_days=0):
     global bs
 
     # surllib.skoleLogin()
@@ -146,8 +146,11 @@ def skoleLektier(id):
         fh.write(str(bs))
         fh.close()
     title, lektier = wpParseLektier(bs)
-    print wpOrgPrintLektier(title, lektier)
-    print wpFormatSMSLektier(title, lektier, 1, 1)
+
+    return \
+        title, \
+        wpOrgPrintLektier(title, lektier), \
+        wpFormatSMSLektier(title, lektier, sms_days, sms_min_msgs_days)
 
 def skoleLektierSmsTxt(id, days, min_msgs_days=0):
     global bs

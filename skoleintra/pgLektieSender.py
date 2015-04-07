@@ -97,7 +97,7 @@ def sendEmailSms():
         else:
             print "Warning: Ignoring invalid line in SMS(SMS or Email) To:", recip
 
-    if emailtxt != '':
+    if emailtxt != '' and len(email_to) != 0:
         sendEmailMsg(title, email_to, emailtxt)
     else:
         config.log(

@@ -62,6 +62,8 @@ def beautifyFagName(fag):
         return 'Mat'
     elif fag == 'Engelsk':
         return 'Eng'
+    elif fag == 'Historie':
+        return 'Hist'
     else:
         return fag
 

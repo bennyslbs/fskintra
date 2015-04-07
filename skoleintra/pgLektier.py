@@ -86,7 +86,7 @@ def shortWeekdayString(date):
 
 def wpOrgPrintLektier(title, lektier):
     res = '** ' + title + "\n"
-    for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
+    for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():
             res += '- ' + beautifyFagName(fag) + ': ' + lektie + "\n"
@@ -110,7 +110,7 @@ def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
         days += 2 * int((days -7)/5) # -7 since first week is handled special above
     today = datetime.date.today()
     msgDays = 0;
-    for i in xrange(len(lektier) -1, 0, -1): # Rev-range since newest is the first on forældreintra
+    for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         lektieDay = lektier[i]['day']
         delta = (lektieDay - today).days
         if delta >= 1 and (delta <= days or msgDays < minMsgDays):

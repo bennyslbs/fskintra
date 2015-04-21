@@ -97,11 +97,14 @@ def sendEmailSms():
         else:
             print "Warning: Ignoring invalid line in SMS(SMS or Email) To:", recip
 
-    if emailtxt != '' and len(email_to) != 0:
-        sendEmailMsg(title, email_to, emailtxt)
+    if len(email_to) != 0:
+        if emailtxt != '':
+            sendEmailMsg(title, email_to, emailtxt)
+        else:
+            config.log(
+                u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
+            return 0
     else:
-        config.log(
-            u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
         return 0
 
     if smstxt != '':

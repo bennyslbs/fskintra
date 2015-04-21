@@ -78,7 +78,7 @@ def shortWeekdayString(date):
     if weekday == 4:
         return u'To'
     if weekday == 5:
-        return u'Fr'
+        return u'F'
     if weekday == 6:
         return u'L'
     if weekday == 7:

@@ -38,8 +38,8 @@ def wpParseLektier(bs):
                     entr[k] = entr[k].decode("UTF-8").strip()
                     if entr[k] == '':
                         entr[k] = None
-                if entr[0] != None and entr[1] != None:
-                    fag[entr[0]] = entr[1]
+                if entr[0] != None:
+                    fag[beautifyFagName(entr[0])] = entr[1]
             res.append({
                 'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
                 'weekday' : match_date.group('weekday'),
@@ -91,7 +91,8 @@ def wpOrgPrintLektier(title, lektier):
     for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():
-            res += '- ' + beautifyFagName(fag) + ': ' + lektie + "\n"
+            if lektie:
+                res += '- ' + fag + ': ' + lektie + "\n"
     return res
 
 def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
@@ -130,7 +131,8 @@ def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
 
             # Print lektie
             for fag, lektie in lektier[i]['lektier'].items():
-                res += '' + beautifyFagName(fag) + ': ' + lektie + "\n"
+                if lektie:
+                    res += '' + fag + ': ' + lektie + "\n"
     res = res.rstrip() # Remove trailing \n
     return res
 
@@ -153,22 +155,6 @@ def skoleLektier(id, sms_days=1, sms_min_msgs_days=0):
         title, \
         wpOrgPrintLektier(title, lektier), \
         wpFormatSMSLektier(title, lektier, sms_days, sms_min_msgs_days)
-
-def skoleLektierSmsTxt(id, days, min_msgs_days=0):
-    global bs
-
-    # surllib.skoleLogin()
-    config.log(u'Kigger efter nye lektier for id %d' % id)
-
-    # read the initial page
-    bs = surllib.skoleGetURL(URL_MAIN + "ID=%d" % id, True, True)
-
-    if True:
-        fh = open('/tmp/a.html', 'w')
-        fh.write(str(bs))
-        fh.close()
-    title, lektier = wpParseLektier(bs)
-    return wpFormatSMSLektier(title, lektier, days, min_msgs_days)
 
 def getLektieLister(lektieIds):
     if len(lektieIds) == 0:

@@ -83,6 +83,9 @@ Kør følgende kommando, og besvar spørgsmålene
 
     fskintra.py --config
 
+Opsætning til lektie Email/SMS
+------------------------------
+
 Ønskes info om lektier, skal dette opsættes manuelt
 i configurationsfilen, ~/.skoleintra/skoleintra.txt:
 Indsæt linie:
@@ -213,6 +216,42 @@ galt:
 Du er evt. også velkommen til at kontakte mig. Såfremt det ikke
 virker, må du meget gerne vedhæfte hvad der bliver skrevet, når
 fskintra.py køres med -v.
+
+Lektie Email/SMS
+================
+
+Lektie Email/SMS er en ekstra feature, som sender Email/SMS med lektier.
+
+Denne funktion kan bruges til at sende email/SMS til flere forældre og
+elever fra flere forskellige klasser.
+
+Opsætningen inkluderer ikke dette, og skal gøres direkte i
+konfigurationsfilen, se ovenfor.
+
+Lektie SMS format
+-----------------
+
+Lektie SMS er lidt kompakt, både for at spare på antal SMS'er og for
+at få mindre fyld på en lille skærm.
+
+Eks. (normalt vil man nok ikke få SMS om lektier for så lang tid):
+   Mat: Matematiklektier til i morgen
+   Dan: Dansk til i morgen
+   F:
+   Eng: Engelsk lektier til fredag
+   M1:
+   Dan: Dansk til mandag i næste uge
+   M2:
+   Dan: Dansk til mandag om 2 uger
+
+Forklaring:
+
+Lektier til imorgen står uden ugedag, men med fagets navn (ofte
+forkortet), med eet fag pr. linie.
+
+Ved skift til ny ugedag står der 1-2 bogstavsforkotelse for ugedagen
+(M, Ti, O, To, F, L, S) og hvis det er en uge frem står der et 1-tal
+bagefter, 2 uger frem et 2-tal osv. og : samt ny linie.
 
 Hvem?
 =====

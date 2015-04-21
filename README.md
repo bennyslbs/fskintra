@@ -235,14 +235,14 @@ Lektie SMS er lidt kompakt, både for at spare på antal SMS'er og for
 at få mindre fyld på en lille skærm.
 
 Eks. (normalt vil man nok ikke få SMS om lektier for så lang tid):
-   Mat: Matematiklektier til i morgen
-   Dan: Dansk til i morgen
-   F:
-   Eng: Engelsk lektier til fredag
-   M1:
-   Dan: Dansk til mandag i næste uge
-   M2:
-   Dan: Dansk til mandag om 2 uger
+    Mat: Matematiklektier til i morgen
+    Dan: Dansk til i morgen
+    F:
+    Eng: Engelsk lektier til fredag
+    M1:
+    Dan: Dansk til mandag i næste uge
+    M2:
+    Dan: Dansk til mandag om 2 uger
 
 Forklaring:
 

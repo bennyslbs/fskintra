@@ -132,7 +132,7 @@ def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
             # Print lektie
             for fag, lektie in lektier[i]['lektier'].items():
                 if lektie:
-                    res += '' + fag + ': ' + lektie + "\n"
+                    res += '' + fag + ': ' + re.sub("<.*?>", " ", lektie) + "\n"
     res = res.rstrip() # Remove trailing \n
     return res
 

@@ -14,12 +14,26 @@ import sys
 import re
 import datetime
 import hashlib
+import time
+
+
+def unienc(s):
+    if type(s) == unicode:
+        return s.encode('utf-8')
+    else:
+        return s
 
 
 def beautify(data):
-    return BeautifulSoup.BeautifulSoup(
-        data,
-        convertEntities=BeautifulSoup.BeautifulStoneSoup.HTML_ENTITIES)
+    try:
+        return BeautifulSoup.BeautifulSoup(
+            data,
+            convertEntities=BeautifulSoup.BeautifulStoneSoup.HTML_ENTITIES)
+    except ValueError, e:
+        # Maybe due to 'wide' unicode char, e.g., smiley &#128516;
+        #    ValueError: unichr() arg not in range(0x10000) (narrow Python build)
+        # This breaks some python installs
+        return BeautifulSoup.BeautifulSoup(data)
 
 
 _browser = None
@@ -78,8 +92,27 @@ def skoleLogin():
 
     URL_LOGIN = u'https://%s/Infoweb/Fi2/Login.asp' % config.HOSTNAME
     config.log(u'Login på skoleintra')
-    config.log(u'skoleLogin: URL %s' % URL_LOGIN, 2)
-    br.open(URL_LOGIN)
+    err = True
+    try:
+        config.log(u'skoleLogin: URL %s' % URL_LOGIN, 2)
+        br.open(URL_LOGIN)
+        err = False
+    except Exception, e:
+        if 'EOF occurred in violation of protocol' in str(e.reason):
+            config.log(u'skoleLogin: Prøver igen med sslfix')
+            import sslfix
+            config.log(u'skoleLogin: URL %s' % URL_LOGIN, 2)
+            try:
+                br.open(URL_LOGIN)
+                err = False
+            except Exception, e:
+                pass
+    if err:
+        config.log(u'skoleLogin: Kan ikke logge på', 0)
+        config.log(u'skoleLogin: Check at URLen %s er rigtig' % URL_LOGIN, 0)
+        config.log(u'skoleLogIn: og prøv igen senere', 0)
+        sys.exit(0)
+
     config.log(u'skoleLogin: Brugernavn %s' % config.USERNAME, 2)
     br.select_form(name='FrontPage_Form1')
     br.form.set_all_readonly(False)
@@ -119,8 +152,12 @@ def skoleLogin():
     _skole_login_done = True
 
 
-def url2cacheFileName(url):
+def url2cacheFileName(url, perChild, postData):
     assert(type(url) == str)
+    if perChild:
+        url += '&CHILDNAME=' + unienc(config.CHILDNAME)
+    if postData:
+        url += postData
     up = urlparse.urlparse(url)
     parts = [config.CACHE_DN,
              up.scheme,
@@ -131,10 +168,13 @@ def url2cacheFileName(url):
         for (k, vs) in sorted(cgi.parse_qs(up.query).items()):
             xs = [az.sub(lambda x: hex(ord(x.group(0))), x) for x in [k] + vs]
             parts[-1] += '_' + '-'.join(xs)
-    return os.path.join(*parts)
+    cfn = os.path.join(*parts)
+    if type(cfn) == unicode and not os.path.supports_unicode_filenames:
+        cfn = cfn.encode('utf-8')
+    return cfn
 
 
-def skoleGetURL(url, asSoup=False, noCache=False):
+def skoleGetURL(url, asSoup=False, noCache=False, perChild=True, postData=None):
     '''Returns data from url as raw string or as a beautiful soup'''
     if type(url) == unicode:
         url, uurl = url.encode('utf-8'), url
@@ -153,17 +193,31 @@ def skoleGetURL(url, asSoup=False, noCache=False):
         else:
             return data
 
-    lfn = url2cacheFileName(url)
+    if type(postData) == dict:
+        pd = {}
+        for (k,v) in postData.items():
+            pd[unienc(k)] = unienc(v)
+        postData = urllib.urlencode(pd)
+    else:
+        postData = unienc(postData)
+
+    lfn = url2cacheFileName(url, perChild, postData)
 
     if os.path.isfile(lfn) and not noCache and not config.SKIP_CACHE:
         config.log('skoleGetURL: Henter fra cache %s' % uurl, 2)
+        config.log('skoleGetURL: %s' % unienc(lfn), 2)
         data = open(lfn, 'rb').read()
     else:
         qurl = urllib.quote(url, safe=':/?=&%')
-        config.log(u'skoleGetURL: Trying to fetch %s' % qurl, 2)
+        msg = u'Trying to fetch %s' % qurl
+        if perChild:
+            msg += u' child='+config.CHILDNAME
+        if postData:
+            msg += u' '+postData
+        config.log(u'skoleGetURL: %s' % msg, 2)
         skoleLogin()
         br = getBrowser()
-        resp = br.open(qurl)
+        resp = br.open(qurl, postData)
         data = resp.read()
         # write to cache
         ldn = os.path.dirname(lfn)
@@ -174,6 +228,7 @@ def skoleGetURL(url, asSoup=False, noCache=False):
     if asSoup:
         data = beautify(data)
         data.cachedate = datetime.date.fromtimestamp(os.path.getmtime(lfn))
+        data.cacheage = (time.time() - os.path.getmtime(lfn))/(24 * 3600.)
         return data
     else:
         return data

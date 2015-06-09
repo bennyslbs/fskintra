@@ -17,7 +17,7 @@ SKOLEBESTYELSE_NAME = 'Skolebestyrelsen'
 
 cnames = skoleintra.schildren.skoleGetChildren()
 if cnames.count(SKOLEBESTYELSE_NAME):
-    print 'Ignorerer ['+SKOLEBESTYELSE_NAME+']'
+    skoleintra.config.log(u'Ignorerer ['+SKOLEBESTYELSE_NAME+']')
     cnames.remove(SKOLEBESTYELSE_NAME)
 
 for cname in cnames:

@@ -14,7 +14,7 @@ URL_MAIN = URL_PREFIX + 'Dagbog/VisDagbog.asp?Periode=naestemaaned&'
 
 def wpParseLektier(bs):
     '''Get lektier'''
-    title = bs.find('h2').string
+    title = bs.find('h2').string.encode('utf8')
 
     maint = [t for t in bs.findAll('table')]
     res = []
@@ -93,7 +93,7 @@ def wpOrgPrintLektier(title, lektier):
         for fag, lektie in lektier[i]['lektier'].items():
             if lektie:
                 res += '- ' + fag + ': ' + lektie + "\n"
-    return res
+    return res.encode('utf8')
 
 def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
     '''Format compact string intended for SMS with lektier for days,

@@ -13,6 +13,10 @@ import time
 import re
 import json
 
+import sys
+reload(sys)  # Reload does the trick!
+sys.setdefaultencoding('UTF8')
+
 ROOT = os.path.expanduser('~/.skoleintra/')
 DEFAULT_FN = os.path.join(os.path.dirname(__file__), 'default.inf')
 CONFIG_FN = '~/.skoleintra/skoleintra.txt'
@@ -73,7 +77,6 @@ if options.doconfig and options.password is not None:
     parser.error(u'''--config og --password kan ikke bruges samtidigt''')
 
 SKIP_CACHE = options.skipcache
-SMS = options.sms
 
 def ensureDanish():
     '''Ensure that we can do Danish letters on stderr, stdout by wrapping
@@ -228,6 +231,7 @@ try:
     SMTPPORT = softGet(cfg, 'default', 'smtpport')
     SMTPLOGIN = softGet(cfg, 'default', 'smtplogin')
     SMTPPASS = softGet(cfg, 'default', 'smtppassword')
+    LEKTIEDB = os.path.expanduser(softGet(cfg, 'default', 'lektiedb'))
     LEKTIEIDS = softGet(cfg, 'default', 'lektieids')
     if re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', LEKTIEIDS):
         # Shall be on list form [num, num, num]
@@ -249,30 +253,29 @@ for dn in (CACHE_DN, MSG_DN):
 
 # Get SMSGW
 def getSmsGw(section):
-    global SMS_GW
-    global SMS_KEY
-    global SMS_URL
-    try:
-        SMS_GW = cfg.get(section, 'gw')
-        SMS_KEY = softGet(cfg, section, 'key')
-        SMS_URL = softGet(cfg, section, 'url')
-    except ConfigParser.NoOptionError, e:
-        parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.
-    Ret direkte i '%s'.''' % (CONFIG_FN, e.option, section, CONFIG_FN))
+    smsgw = {}
+    for key in ['gw', 'key', 'url']:
+        try:
+            smsgw[key] = cfg.get(section, key)
+        except ConfigParser.NoOptionError, e:
+            parser.error(u"Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.\nRet direkte i '%s'." % (CONFIG_FN, e.option, section, CONFIG_FN))
+    return smsgw
 
 # SMS
-if options.sms is not None:
-    sms_grp = 'sms-'+options.sms
-    try:
-        getSmsGw(cfg.get(sms_grp, 'gw'))
-        SMS_ID = int(cfg.get(sms_grp, 'lektieid'))
-        SMS_DAYS = int(cfg.get(sms_grp, 'days'))
-        SMS_MIN_MSGS_DAYS = int(cfg.get(sms_grp, 'min_msgs_days'))
-        SMS_FROM = cfg.get(sms_grp, 'from')
-        SMS_TO = cfg.get(sms_grp, 'to')
-    except ConfigParser.NoOptionError, e:
-        parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.
-    Ret direkte i '%s'.''' % (CONFIG_FN, e.option, sms_grp, CONFIG_FN))
+SMS = {}
+if options.sms:
+    for s in options.sms.split(','):
+        SMS[s] = {}
+        sms_grp = 'sms-'+s
+        try:
+            SMS[s]['smsgw'] = getSmsGw(cfg.get(sms_grp, 'gw'))
+            SMS[s]['id'] = int(cfg.get(sms_grp, 'lektieid'))
+            SMS[s]['days'] = int(cfg.get(sms_grp, 'days'))
+            SMS[s]['min_msgs_days'] = int(cfg.get(sms_grp, 'min_msgs_days'))
+            SMS[s]['from'] = cfg.get(sms_grp, 'from')
+            SMS[s]['to'] = cfg.get(sms_grp, 'to')
+        except ConfigParser.NoOptionError, e:
+            parser.error(u"Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.\nRet direkte i '%s'." % (CONFIG_FN, e.option, sms_grp, CONFIG_FN))
 
 #
 # Ensure that SMTP options are sane

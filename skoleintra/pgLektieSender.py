@@ -28,16 +28,16 @@ def sendEmailMsg(subj, recip, msg):
     server.sendmail(config.SENDER, recip, 'Subject: '+subj+'\nReply-To: Benny Simonsen <benny@slbs.dk>\nTo: LektieEmail modtagere\n\n'+msg)
     server.quit()
 
-def sendSmsMsg(to, msg):
+def sendSmsMsg(sms_grp, sms_cfg, to, msg):
     status = -1
     statusStr = ''
 
     # if-elif with all supported SMS gateways
-    if config.SMS_GW == 'smsit.dk':
+    if sms_cfg['smsgw']['gw'] == 'smsit.dk':
         url = 'http://www.smsit.dk/api/sendSms.php'
         params = urllib.urlencode({
-            'apiKey': config.SMS_KEY,
-            'senderId': config.SMS_FROM,
+            'apiKey': sms_cfg['smsgw']['key'],
+            'senderId': sms_cfg['from'],
             'mobile': '45' + to,
             'message': msg.encode('utf-8'),
         })
@@ -48,8 +48,8 @@ def sendSmsMsg(to, msg):
         f = urllib.urlopen(url, params)
         statusStr = f.read()
         status = int(statusStr)
-    elif config.SMS_GW == 'eu.apksoft.android.smsgateway':
-        url = config.SMS_URL + '?password='+config.SMS_KEY + '&phone='+to + '&text='+msg.encode('utf-8')
+    elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
+        url = sms_cfg['smsgw']['url'] + '?password='+sms_cfg['smsgw']['key'] + '&phone='+to + '&text='+msg.encode('utf-8')
         # Debug
         #print "Dbg: url:", url
         # Send
@@ -71,47 +71,49 @@ def sendSmsMsg(to, msg):
         else:
             status = 28
     else:
-        retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ config.SMS_GW + '". Implementer det i sendSmsMsg i pgLektieSender.py'
+        retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ sms_cfg['smsgw]']['gw'] + '". Implementer det i sendSmsMsg i pgLektieSender.py'
 
     # Send SMS if non-empty
-    return status, u'Info: SMS sendt til [%s]: %s med status %d (%s).' % ('sms-'+config.SMS, to, status, statusStr)
+    return status, u'Info: SMS sendt til [%s]: %s med status %d (%s).' % ('sms-'+sms_grp, to, status, statusStr)
 
 # Send Emails and SMS's with lektier
-def sendEmailSms():
-    title, emailtxt, smstxt = pgLektier.skoleLektier(config.SMS_ID, config.SMS_DAYS, config.SMS_MIN_MSGS_DAYS)
+def sendEmailSms(klAll, lektierAll):
+    for sms_grp, sms_cfg in config.SMS.iteritems():
+        config.log(u'Sender til lektie gruppe ['+sms_grp+']')
+        kl, emailtxt, smstxt = pgLektier.formatLektier(klAll[sms_cfg['id']], lektierAll[sms_cfg['id']], sms_cfg['days'], sms_cfg['min_msgs_days'])
 
-    email_to = []
-    sms_to = []
-    for recip in config.SMS_TO.split('\n'):
-        recip = recip.lstrip().rstrip()
+        email_to = []
+        sms_to = []
+        for recip in sms_cfg['to'].split('\n'):
+            recip = recip.lstrip().rstrip()
 
-        match_comment = re.search('(^$|^#)', recip)
-        match_number = re.search('^[0-9]+$', recip)
-        match_email = re.search('^.*@.*$', recip)
-        if match_comment:
-            pass
-        elif match_number:
-            sms_to.append(recip)
-        elif match_email:
-            email_to.append(recip)
+            match_comment = re.search('(^$|^#)', recip)
+            match_number = re.search('^[0-9]+$', recip)
+            match_email = re.search('^.*@.*$', recip)
+            if match_comment:
+                pass
+            elif match_number:
+                sms_to.append(recip)
+            elif match_email:
+                email_to.append(recip)
+            else:
+                print "Warning: Ignoring invalid line in SMS(SMS or Email) To:", recip
+
+        if len(email_to) != 0:
+            if emailtxt != '':
+                sendEmailMsg(kl, email_to, emailtxt)
+            else:
+                config.log(
+                    u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
+                return 0
         else:
-            print "Warning: Ignoring invalid line in SMS(SMS or Email) To:", recip
+            return 0
 
-    if len(email_to) != 0:
-        if emailtxt != '':
-            sendEmailMsg(title, email_to, emailtxt)
+        if smstxt != '':
+            for recip in sms_to:
+                status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
+                config.log(msg)
         else:
             config.log(
-                u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
+                u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
             return 0
-    else:
-        return 0
-
-    if smstxt != '':
-        for recip in sms_to:
-            status, msg = sendSmsMsg(recip, smstxt)
-            config.log(msg)
-    else:
-        config.log(
-            u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
-        return 0

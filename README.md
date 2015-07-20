@@ -12,7 +12,7 @@ flg. steder:
 * Dialog/beskeder: Nye beskeder (både sendt og modtaget)
 * Arkiv/dokumenter: Nye dokumenter
 * Ugeplaner: Nye ugeplaner
-* Lektier: Ikke på Email, men se nedenfor.
+* Lektier: Speciel på forskellige emailadresser samt SMS (kan bruges til hele klasser)
 
 Alle emails bliver gemt, dvs. du får kun en email, såfremt der faktisk
 er kommet nyt.
@@ -88,7 +88,9 @@ Opsætning til lektie Email/SMS
 
 Ønskes info om lektier, skal dette opsættes manuelt
 i configurationsfilen, ~/.skoleintra/skoleintra.txt:
-Indsæt linie:
+Indsæt linier:
+    # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
+    lektiedb=~/.skoleintra/lektier.db
     lektieids=[1, 2, 3]
 hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
 
@@ -120,6 +122,9 @@ dette kan blive ændret uden varsel.
 For at sende en SMS oprettes der er cronjob, der kalder
 "/sti/til/fskintra.py --sms navn", og kører som dig, eller en anden
 bruger der har ~/.skoleintra/skoleintra.txt.
+
+Skal der sendes sms til flere sms-grupper samtidig, ændres til
+"--sms navn1,navn2" (uden mellemrum imellem de forskellige sms-grupper).
 
     [smsgw-xxx]
     # Supported gw's:

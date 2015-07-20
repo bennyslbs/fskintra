@@ -8,13 +8,21 @@ import semail
 import urllib
 import re
 import datetime
+if len(config.LEKTIEIDS) > 0:
+    import pgLektieDB
 
 URL_PREFIX = 'http://%s/Infoweb/Fi/' % config.HOSTNAME
 URL_MAIN = URL_PREFIX + 'Dagbog/VisDagbog.asp?Periode=naestemaaned&'
 
-def wpParseLektier(bs):
+def wpParseLektier(bs, id):
     '''Get lektier'''
-    title = bs.find('h2').string.encode('utf8')
+    try:
+        kl = bs.find('h2').string.encode('utf8')
+        kl = re.sub(r'^Lektiebog\ ', '', kl)  # Remove initial 'Lektiebog '
+        kl = re.sub(r'\ ?kl(\.|asse)?', '', kl)  # Remove kl/kl./klasse at the end
+    except:
+        config.log(u'Warning: Failed to get title for kl for id %d' % id)
+        kl = None
 
     maint = [t for t in bs.findAll('table')]
     res = []
@@ -52,7 +60,7 @@ def wpParseLektier(bs):
             #     for a in attachments:
             #         print "Dbg:", a['href'], a.string
 
-    return title, res
+    return kl, res
 
 def beautifyFagName(fag):
     fag = fag.title()
@@ -86,8 +94,8 @@ def shortWeekdayString(date):
     else:
         return u'?'
 
-def wpOrgPrintLektier(title, lektier):
-    res = '** ' + title + "\n"
+def wpOrgPrintLektier(kl, lektier):
+    res = '** ' + kl + "\n"
     for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():
@@ -95,7 +103,7 @@ def wpOrgPrintLektier(title, lektier):
                 res += '- ' + fag + ': ' + lektie + "\n"
     return res.encode('utf8')
 
-def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
+def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):
     '''Format compact string intended for SMS with lektier for days,
     extend so that lektier for minMsgDays is returned'''
     res = ''
@@ -136,40 +144,41 @@ def wpFormatSMSLektier(title, lektier, days, minMsgDays = 0):
     res = res.rstrip() # Remove trailing \n
     return res
 
-def skoleLektier(id, sms_days=1, sms_min_msgs_days=0):
+def getLektieLister():
     global bs
 
-    # surllib.skoleLogin()
-    config.log(u'Kigger efter nye lektier for id %d' % id)
-
-    # read the initial page
-    bs = surllib.skoleGetURL(URL_MAIN + "ID=%d" % id, True, True)
-
-    if True:
-        fh = open('/tmp/a.html', 'w')
-        fh.write(str(bs))
-        fh.close()
-    title, lektier = wpParseLektier(bs)
-
-    return \
-        title, \
-        wpOrgPrintLektier(title, lektier), \
-        wpFormatSMSLektier(title, lektier, sms_days, sms_min_msgs_days)
-
-def getLektieLister(lektieIds):
-    if len(lektieIds) == 0:
+    if len(config.LEKTIEIDS) == 0:
         config.log(u'Info: For at hente lektier: Adder linie i config filen: "lektieids=[1, 2, 3]"')
         config.log(u'Info- hvor tallene er ID=<num> for din(e) barn/børn i url\'en for Lektier')
-    for id in lektieIds:
-        skoleLektier(id)
+
+    klAll = {}
+    lektierAll = {}
+    for id in config.LEKTIEIDS:
+        # surllib.skoleLogin()
+        config.log(u'Kigger efter opdaterede lektier for id %d, og gemmer i lektiedatabasen' % id)
+
+        # read the initial page
+        bs = surllib.skoleGetURL(URL_MAIN + "ID=%d" % id, True, True)
+        #f = open('/tmp/a.html', 'r')
+        #bs = surllib.beautify(f.read())
+
+        if True:
+            fh = open('/tmp/a.html', 'w')
+            fh.write(str(bs))
+            fh.close()
+        kl, lektier = wpParseLektier(bs, id)
+        # Fill content into DB
+        if kl: # If kl = None it is an illegal ID (no header, so propably illegal ID)
+            pgLektieDB.updateLektieDb(id, kl, lektier)
+            klAll[id] = kl
+            lektierAll[id] = lektier
+    return klAll, lektierAll
+
+def formatLektier(kl, lektier, sms_days=1, sms_min_msgs_days=0):
+    return \
+        kl, \
+        wpOrgPrintLektier(kl, lektier), \
+        wpFormatSMSLektier(kl, lektier, sms_days, sms_min_msgs_days)
 
 if __name__ == '__main__':
-    # test
-    #skoleLektier(22)
-
-    f = open('/tmp/a.html', 'r')
-    title, lektier = wpParseLektier(surllib.beautify(f.read()))
-    print "# Org-mode formatted content ###########################################"
-    print wpOrgPrintLektier(title, lektier)
-    print "# SMS content ##########################################################"
-    print wpFormatSMSLektier(title, lektier, 7)
+    pass

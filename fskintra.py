@@ -3,6 +3,7 @@
 #
 #
 
+import sys
 import skoleintra.config
 import skoleintra.pgContactLists
 import skoleintra.pgDialogue
@@ -23,7 +24,7 @@ for cname in cnames:
     skoleintra.pgDocuments.skoleDocuments()
     skoleintra.pgWeekplans.skoleWeekplans()
 
-#skoleintra.pgLektier.getLektieLister(skoleintra.config.LEKTIEIDS)
+klAll, lektierAll = skoleintra.pgLektier.getLektieLister()
 
-if skoleintra.config.SMS:
-    exit(skoleintra.pgLektieSender.sendEmailSms())
+errCode = skoleintra.pgLektieSender.sendEmailSms(klAll, lektierAll)
+sys.exit(errCode)

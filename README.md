@@ -83,10 +83,23 @@ Kør følgende kommando, og besvar spørgsmålene
 
     fskintra.py --config
 
+Til slut testes programmet ved at køre det
+
+    fskintra.py --sms navn
+
+Din opsætning gemmes i $HOME/.skoleintra/skoleintra.txt. Såfremt du
+kun skal rette lidt kan det evt. være smartest at rette direkte i
+filen i stedet for at køre --config igen.
+
+I $HOME/.skoleintra gemmes også alt hentet indhold og alle sendte
+emails.
+
 Opsætning til lektie Email/SMS
 ------------------------------
 
-Ønskes info om lektier, skal dette opsættes manuelt
+Ønskes info om lektier, skal dette opsættes manuelt efter ovenstående
+konfiguration.
+
 i configurationsfilen, ~/.skoleintra/skoleintra.txt:
 Indsæt linier:
     # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
@@ -95,23 +108,33 @@ Indsæt linier:
 hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
 
 Ønskes SMS med info om lektier, skal der oprettes en sektion som denne
-for hver barn der skal have en SMS.
+for hver barn/gruppe der skal have en SMS.
 
-Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med lektier.
+Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med
+lektier og forældre kan få en email.
 
-- navn: Id på SMS-gruppen.
+Der skal laves en smsgw-gruppe, se [smsgw-xxx] eksemplet herunder.
+
+Desuden skal der laves en [sms-navn] seksion for hver klasse (et eller
+flere børn/forældre)
+
+- navn: [sms-<navn>] <navn> erstattes med navnet på sms-gruppen.
 - gw: SMS gateway, pt. kun understøttelse for smsit.dk og
-  android app (https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway)
-- kEY1234: key som oplyses af SMS gateway udbyder
-- lektieid: Eer id - se lektieids ovenfor
+  android app
+  (https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway)
+- lektieid: Er id - se lektieids ovenfor
 - days: Antal skoledage der skal sendes lektier for
-- min_msgs_days: Minimum antal dage med lektier der skal sendes for (hvis der ikke er lektier til hver dag)
-- from: Tekst der angiver afsender (max 11 bgstaver, nogle telefoner/udbydere fjerner mellemrum)
+- min_msgs_days: Minimum antal dage med lektier der skal sendes for
+  (hvis der ikke er lektier til hver dag)
+
+- from: Tekst der angiver afsender (max 11 bgstaver, nogle
+  telefoner/udbydere fjerner mellemrum)
 
   Bruges kun for nogle SMS Gateways (ikke for afsendelse fra SMS
   kort/alm. tlf. abonnement, men for smsit.dk
 - to: Liste med Modtagere, emailadresser og mobilnr.
-  nr. +45 bliver automatisk sat foran (hvis krævet), og må ikke være inkluderet her.
+  nr. +45 bliver automatisk sat foran (hvis krævet), og må ikke være
+  inkluderet her.
 
 Skal der sendes SMS/email til flere klasser skal der oprettes flere
 [sms-navnXX] grupper.
@@ -134,6 +157,11 @@ Skal der sendes sms til flere sms-grupper samtidig, ændres til
     #    needs sms_key=<password> (not tested without)
     #    See https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
     # Ex.:
+    [smsgw-smsit.dk]
+    gw=smsit.dk
+    key=YourCodeFromSmsit.dk
+    url=DummyNotNeeded
+
     [smsgw-1]
     gw=eu.apksoft.android.smsgateway
     url=http://1.2.3.4:9090/sendsms
@@ -153,17 +181,6 @@ Skal der sendes sms til flere sms-grupper samtidig, ændres til
 	hjemme_v_peter@example.org
 	# Søren
 	soren@example.org
-
-Til slut testes programmet ved at køre det
-
-    fskintra.py
-
-Din opsætning gemmes i $HOME/.skoleintra/skoleintra.txt. Såfremt du
-kun skal rette lidt kan det evt. være smartest at rette direkte i
-filen i stedet for at køre --config igen.
-
-I $HOME/.skoleintra gemmes også alt hentet indhold og alle sendte
-emails.
 
 Cron-job
 --------

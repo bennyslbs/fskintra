@@ -259,6 +259,36 @@ Ved skift til ny ugedag står der 1-2 bogstavsforkotelse for ugedagen
 (M, Ti, O, To, F, L, S) og hvis det er en uge frem står der et 1-tal
 bagefter, 2 uger frem et 2-tal osv. og : samt ny linie.
 
+Lektie Web
+==========
+
+Indholdet er det samme som for Lektie Email/SMS, men her vises
+indholdet fra databasen over lektier.
+
+Dette bør kun stilles tilrådighed for andre efter aftale med den
+dataansvarlige (skolelederen).
+
+Funktionaliteten kan bruges til at hente lektier for flere klasser og
+vises samlet for hver enkelt dag.
+
+Folderen www kopieres til en webserver folder, som kan eksekvere
+python kode (f. eks. cgi-bin). Hvis det skal bruges fra smartphones,
+er det lettest at undgå passwords, men have en url der er lang og med
+tilfældige karakterer + bede søgemaskiner om at ignorere det
+vha. robots.txt. Selvfølgelig skal der ikke være links til dette fra
+andre websites.
+
+Husk at rename filen lektier til noget med en række tilfældige karakterer!
+
+I kopien af www-folderen skal der laves et symlink til lektie.db filen.
+
+I roden af webserveren bør der placeres en favicon.ico - den bliver
+refereret i de genererede html sider.
+
+P.t. vil links skrevet i lektier være aktive, og vil kunne ses i logs
+som referrer hvis disse benyttes! F. eks vil smilies indsat via
+lærenes editor referere til skolens intra.
+
 Hvem?
 =====
 

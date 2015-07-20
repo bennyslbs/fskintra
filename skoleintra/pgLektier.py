@@ -95,7 +95,9 @@ def shortWeekdayString(date):
         return u'?'
 
 def wpOrgPrintLektier(kl, lektier):
-    res = '** ' + kl + "\n"
+    res = ''
+    if len(lektier) > 0:
+        res += '** ' + kl + "\n"
     for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():

@@ -104,7 +104,7 @@ def sendEmailSms(klAll, lektierAll):
                 sendEmailMsg(kl, email_to, emailtxt)
             else:
                 config.log(
-                    u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
+                    u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
                 return 0
         else:
             return 0
@@ -115,5 +115,5 @@ def sendEmailSms(klAll, lektierAll):
                 config.log(msg)
         else:
             config.log(
-                u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for [%s]' % ('sms-'+config.SMS))
+                u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
             return 0

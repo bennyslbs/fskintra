@@ -4,13 +4,17 @@
 # -*- encoding: utf-8 -*-
 #
 
+# Create a symlink of this file in web server cgi-bin.
+# - If not a symlink change FSK_INTRA_LOC to point to FSK_INTRA root dir
+# Also create a symlink to lektier.db (default: ~/.skoleintra/lektier.db)
+# - The symlink name must be <name of this symlinked file>.db, otherways change DB value below.
+
+import os
+
 # Location of sqlite3 database
-DB = './lektier.db'  # Create a symlink to the real lektier.db in the same dir as this file (for webusage)
+DB = __file__ + '.db'  # Create a symlink to the real lektier.db in the same dir as this file (for webusage), __file__ is the name of the symlink of lektier (typically located in the webserver)
 
-# This file can be copied to web server cgi-bin and used from a webserver.
-# Then update FSK_INTRA_LOC to point to absolute path this dir - root of fskintra.
-
-FSK_INTRA_LOC = '/home/benny/git/github.com/bennyslbs/fskintra.work'  # No / at end!
+FSK_INTRA_LOC = os.path.dirname(os.path.realpath(__file__)) + '/..'
 # FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE must match location of file, update FSK_INTRA_LOC to root of fskintra
 WEBLIB = '/weblib'  # Don't change
 WEBLEKTIER_FILE = '/webLektier.py'  # Don't change

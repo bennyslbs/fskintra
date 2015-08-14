@@ -50,9 +50,9 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
     
     data = []
 
-    for delta_days in xrange(predays + days):
-        # Day
-        day = datetime.date.today() + datetime.timedelta(days=delta_days -predays)
+    for delta_days in xrange(-predays, days):
+        # Day, +1 since tomorrow is reference
+        day = datetime.date.today() + datetime.timedelta(days=delta_days +1)
         # Select lektier for day
         entries_found_for_day = False # Any lektier for day?
         lektie = {}

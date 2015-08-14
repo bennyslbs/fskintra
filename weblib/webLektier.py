@@ -8,6 +8,8 @@ import sqlite3
 import datetime
 import cgi
 import sys
+import re
+
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
@@ -193,10 +195,11 @@ def main(db):
                         print '        <li><span class="kl">' + classes[id] + ' klasse</span>'
                         print '          <ul>'
                         for l in d['lektie'][id]:
+                            lektieNoLink = re.sub('://', 'CORRUPURL://', '{}'.format(l[1]))
                             upd_info = ''
                             if l[3]:
                                 upd_info = 'opdateret: '+l[3]
-                            print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {})</span></li>'.format(l[0], l[1], l[2], upd_info)
+                            print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
                         print '          </ul>'
                         print '        </li>'
                 print '      </ul>'

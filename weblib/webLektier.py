@@ -64,7 +64,7 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
             lektie[id] = dbc.fetchall()
             if lektie[id]:
                 entries_found_for_day = True
-        data.append({'day': day, 'lektie': lektie, 'hit': entries_found_for_day})
+        data.append({'delta': delta_days, 'day': day, 'lektie': lektie, 'hit': entries_found_for_day})
     return data
 
 def main(db):
@@ -83,12 +83,21 @@ def main(db):
     <link rel="icon" type="image/png" href="/favicon.ico">
 
     <style>
-     .day, .kl {
+     .oldday, .today, .nextday, .day, .kl {
        font-weight: bold;
        font-size: large;
      }
+     .oldday {
+       color: rgb(100,100,100);
+     }
+     .today {
+       color: rgb(155,50,50);
+     }
+     .nextday {
+       color: rgb(255,50,50);
+     }
      .day {
-       color: rgb(0,50,50);
+       color: rgb(0,0,200);
      }
      .fag {
      }
@@ -188,7 +197,19 @@ def main(db):
         for d in data:
             if d['hit']:
                 dayHeader = d['day'].strftime('%A d. %-d.%-m.').capitalize()
-                print '    <p><span class="day">' + dayHeader + '</span>'
+                # day class dependonds on before today, today or in the future
+                if d['delta'] < -1: # Old day
+                    dayClass = 'oldday'
+                elif d['delta'] == -1: # Today
+                    dayClass = 'today'
+                elif d['delta'] == 0: # Tomorrow
+                    dayClass = 'nextday'
+                elif datetime.date.today().weekday() >= 4 and d['delta'] < 7 - datetime.date.today().weekday(): # Weekend, extend to monday
+                    dayClass = 'nextday'
+                else: # A day in the future
+                    dayClass = 'day'
+
+                print '    <p><span class="' + dayClass + '">' + dayHeader + '</span>'
                 print '      <ul>'
                 for id in lektieIDs:
                     if d['lektie'][id]:

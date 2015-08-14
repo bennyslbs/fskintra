@@ -217,6 +217,7 @@ def main(db):
                         print '          <ul>'
                         for l in d['lektie'][id]:
                             lektieNoLink = re.sub('://', 'CORRUPURL://', '{}'.format(l[1]))
+                            lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/face.png"', lektieNoLink)
                             upd_info = ''
                             if l[3]:
                                 upd_info = 'opdateret: '+l[3]

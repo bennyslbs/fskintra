@@ -322,12 +322,10 @@ lekter, dog tilføjet endelsen .db. Hvis python-script linket hedder
 /var/www/cgi-bin/lektier.py, skal lektier.db linket hedde
 /var/www/cgi-bin/lektier.py.db.
 
-I roden af webserveren kan der ligeledes laves et symlink til eller
-kopi af www/root/fskintra. Pt. er der kun een smily som bruges istedet
+I roden af webserveren bør der ligeledes laves et symlink til eller
+kopi af www/root/fskintra. Der ligger favicons mm. fra
+http://realfavicongenerator.net/ og en enkelt smily som bruges istedet
 for alle skoleintra editor-smilies.
-
-I roden af webserveren kan der placeres en favicon.ico - den bliver
-refereret i de genererede html sider.
 
 Hvem?
 =====

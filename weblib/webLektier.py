@@ -79,8 +79,26 @@ def main(db):
   <head>
     <meta charset="UTF-8">
     <title>Lektier</title>
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" href="/favicon.ico">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/fskintra/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/fskintra/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/fskintra/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/fskintra/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/fskintra/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/fskintra/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/fskintra/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/fskintra/favicons/manifest.json">
+    <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png">
+    <meta name="msapplication-config" content="/fskintra/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
 
     <style>
      .oldday, .today, .nextday, .day, .kl {
@@ -219,7 +237,7 @@ def main(db):
                             lektieNoLink = '-'
                             if l[1]:
                                 lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
-                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/face.png"', lektieNoLink)
+                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
                             upd_info = ''
                             if l[3]:
                                 upd_info = ', opdateret: '+l[3]

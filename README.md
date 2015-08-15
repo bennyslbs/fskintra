@@ -288,23 +288,46 @@ dataansvarlige (skolelederen).
 Funktionaliteten kan bruges til at hente lektier for flere klasser og
 vises samlet for hver enkelt dag.
 
-Folderen www kopieres til en webserver folder, som kan eksekvere
-python kode (f. eks. cgi-bin). Hvis det skal bruges fra smartphones,
-er det lettest at undgå passwords, men have en url der er lang og med
-tilfældige karakterer + bede søgemaskiner om at ignorere det
-vha. robots.txt. Selvfølgelig skal der ikke være links til dette fra
-andre websites.
+Links i lektier vil blive lavet korrupte idet :// erstattes af
+CORRUPURL://, og httpCORRUPURL:// håndterer browsere (forhåbntlig)
+ikke. Dette er for ikke at få referencer til lektie-websiden på andre
+web-servere, hvis der ikke bruges password.
 
-Husk at rename filen lektier til noget med en række tilfældige karakterer!
+Opsætning
+---------
 
-I kopien af www-folderen skal der laves et symlink til lektie.db filen.
+For at få gemt lektier i databasen skal fskintra køres f. eks. fra
+cron, hvor lektiedb og lektieids er opsat. Se Opsætning til lektie
+Email/SMS.
 
-I roden af webserveren bør der placeres en favicon.ico - den bliver
+Lektie Web viser udelukkende indhold fra databasen, men læser ikke
+konfiguationsfilen skoleintra.txt.
+
+I en webserver folder, som kan eksekvere python kode
+(f. eks. cgi-bin) laves der symlink til <fskintra>/www/lektier. Det
+skal være et symlink. Hvis det er en kopi, skal der ændres i kopien -
+se hjælp i filen.
+
+Hvis det skal bruges fra smartphones, er det lettest at undgå
+passwords, men have en url der er lang og med tilfældige karakterer +
+bede søgemaskiner om at ignorere det vha. robots.txt. Selvfølgelig
+skal der ikke være links til dette fra andre websites.
+
+Er der ikke password, husk da at rename filen lektier til noget med en
+række tilfældige karakterer!
+
+Der skal laves et symlink til lektie.db filen. sym-linket skal ligge
+samme sted og have samme navn som symlinket til python scriptet
+lekter, dog tilføjet endelsen .db. Hvis python-script linket hedder
+/var/www/cgi-bin/lektier.py, skal lektier.db linket hedde
+/var/www/cgi-bin/lektier.py.db.
+
+I roden af webserveren kan der ligeledes laves et symlink til eller
+kopi af www/root/fskintra. Pt. er der kun een smily som bruges istedet
+for alle skoleintra editor-smilies.
+
+I roden af webserveren kan der placeres en favicon.ico - den bliver
 refereret i de genererede html sider.
-
-P.t. vil links skrevet i lektier være aktive, og vil kunne ses i logs
-som referrer hvis disse benyttes! F. eks vil smilies indsat via
-lærenes editor referere til skolens intra.
 
 Hvem?
 =====

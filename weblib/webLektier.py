@@ -193,7 +193,7 @@ def main(db):
         classes = getClasses(dbc)
 
         # Print lektier
-        print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), ' klasse</h1>'
+        print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'
         for d in data:
             if d['hit']:
                 dayHeader = d['day'].strftime('%A d. %-d.%-m.').capitalize()
@@ -213,15 +213,17 @@ def main(db):
                 print '      <ul>'
                 for id in lektieIDs:
                     if d['lektie'][id]:
-                        print '        <li><span class="kl">' + classes[id] + ' klasse</span>'
+                        print '        <li><span class="kl">' + classes[id] + '</span>'
                         print '          <ul>'
                         for l in d['lektie'][id]:
-                            lektieNoLink = re.sub('://', 'CORRUPURL://', '{}'.format(l[1]))
-                            lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/face.png"', lektieNoLink)
+                            lektieNoLink = '-'
+                            if l[1]:
+                                lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
+                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/face.png"', lektieNoLink)
                             upd_info = ''
                             if l[3]:
-                                upd_info = 'opdateret: '+l[3]
-                            print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
+                                upd_info = ', opdateret: '+l[3]
+                            print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
                         print '          </ul>'
                         print '        </li>'
                 print '      </ul>'

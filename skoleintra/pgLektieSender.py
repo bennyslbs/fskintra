@@ -41,17 +41,12 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
             'mobile': '45' + to,
             'message': msg.encode('utf-8'),
         })
-        # Debug
-        #print "Dbg: url:", url
-        #print "Dbg: params:", params
         # Send
         f = urllib.urlopen(url, params)
         statusStr = f.read()
         status = int(statusStr)
     elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
         url = sms_cfg['smsgw']['url'] + '?password='+sms_cfg['smsgw']['key'] + '&phone='+to + '&text='+msg.encode('utf-8')
-        # Debug
-        #print "Dbg: url:", url
         # Send
         f = urllib.urlopen(url)
         statusStr = f.read()

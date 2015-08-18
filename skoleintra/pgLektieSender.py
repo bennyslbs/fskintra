@@ -48,7 +48,10 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
     elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
         url = sms_cfg['smsgw']['url'] + '?password='+sms_cfg['smsgw']['key'] + '&phone='+to + '&text='+msg.encode('utf-8')
         # Send
-        f = urllib.urlopen(url)
+        try:
+            f = urllib.urlopen(url)
+        except:
+            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % 'sms-'+sms_grp
         statusStr = f.read()
 
         statusStr = statusStr.replace('\n', '')

@@ -21,7 +21,7 @@ def wpParseLektier(bs, id):
         kl = re.sub(r'^Lektiebog\ ', '', kl)  # Remove initial 'Lektiebog '
         kl = re.sub(r'\ ?kl(\.|asse)?', '', kl)  # Remove kl/kl./klasse at the end
     except:
-        config.log(u'Warning: Failed to get title for kl for id %d' % id)
+        config.log(u'Warning: Failed to get title for kl for id %d, this indicated getting Lektiebog failed.' % id, 0)
         kl = None
 
     maint = [t for t in bs.findAll('table')]

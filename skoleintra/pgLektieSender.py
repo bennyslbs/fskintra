@@ -42,7 +42,10 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
             'message': msg.encode('utf-8'),
         })
         # Send
-        f = urllib.urlopen(url, params)
+        try:
+            f = urllib.urlopen(url, params)
+        except:
+            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % 'sms-'+sms_grp
         statusStr = f.read()
         status = int(statusStr)
     elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
@@ -62,7 +65,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         statusStr = match.group('body')
         statusStr = statusStr.replace('<br/>', '\n').rstrip()
 
-        if statusStr == 'Mesage SENT!':
+        if statusStr == 'Mesage SENT!': # Status from GW is misspelled.
             status = 0
         elif statusStr == 'Invalid parameters':
             status = 1
@@ -71,8 +74,11 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
     else:
         retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ sms_cfg['smsgw]']['gw'] + '". Implementer det i sendSmsMsg i pgLektieSender.py'
 
-    # Send SMS if non-empty
-    return status, u'Info: SMS sendt til [%s]: %s med status %d (%s).' % ('sms-'+sms_grp, to, status, statusStr)
+    # Return SMS status, 0 ok, !=0 maybe error, something went wrong
+    tried_to_send_str = ''
+    if status != 0:
+        tried_to_send_str = 'forsøgt '
+    return status, u'SMS ' + tried_to_send_str + 'sendt til [%s]: %s med status %d (%s).' % ('sms-'+sms_grp, to, status, statusStr)
 
 # Send Emails and SMS's with lektier
 def sendEmailSms(klAll, lektierAll):
@@ -110,7 +116,10 @@ def sendEmailSms(klAll, lektierAll):
         if smstxt != '':
             for recip in sms_to:
                 status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
-                config.log(msg)
+                if status != 0:
+                    config.log(msg, 0)
+                else:
+                    config.log(msg)
         else:
             config.log(
                 u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')

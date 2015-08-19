@@ -264,7 +264,7 @@ def getSmsGw(section):
 # SMS
 SMS = {}
 if options.sms:
-    for s in options.sms.split(','):
+    for s in filter(None, options.sms.split(',')):
         SMS[s] = {}
         sms_grp = 'sms-'+s
         try:

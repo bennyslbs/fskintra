@@ -26,5 +26,4 @@ for cname in cnames:
 
 klAll, lektierAll = skoleintra.pgLektier.getLektieLister()
 
-errCode = skoleintra.pgLektieSender.sendEmailSms(klAll, lektierAll)
-sys.exit(errCode)
+skoleintra.pgLektieSender.sendEmailSms(klAll, lektierAll)

@@ -10,7 +10,7 @@ import smtplib
 
 def sendEmailMsg(subj, recip, msg):
     '''Copy + slighlty modified from semail send()'''
-    config.log(u'Sender email %s to %s' %
+    config.log(u'Sender email for %s to %s' %
                (subj, recip))
 
     # open smtp connection
@@ -45,7 +45,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         try:
             f = urllib.urlopen(url, params)
         except:
-            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % 'sms-'+sms_grp
+            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
         statusStr = f.read()
         status = int(statusStr)
     elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
@@ -54,7 +54,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         try:
             f = urllib.urlopen(url)
         except:
-            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % 'sms-'+sms_grp
+            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
         statusStr = f.read()
 
         statusStr = statusStr.replace('\n', '')
@@ -109,18 +109,15 @@ def sendEmailSms(klAll, lektierAll):
             else:
                 config.log(
                     u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
-                return 0
-        else:
-            return 0
 
-        if smstxt != '':
-            for recip in sms_to:
-                status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
-                if status != 0:
-                    config.log(msg, 0)
-                else:
-                    config.log(msg)
-        else:
-            config.log(
-                u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
-            return 0
+        if len(sms_to) != 0: # Any receivers and a
+            if smstxt != '': # Any message to send
+                for recip in sms_to:
+                    status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
+                    if status != 0:
+                        config.log(msg, 0)
+                    else:
+                        config.log(msg)
+            else:
+                config.log(
+                    u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')

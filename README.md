@@ -12,7 +12,7 @@ flg. steder:
 * Dialog/beskeder: Nye beskeder (både sendt og modtaget)
 * Arkiv/dokumenter: Nye dokumenter
 * Ugeplaner: Nye ugeplaner
-* Lektier: Speciel på forskellige emailadresser samt SMS (kan bruges til hele klasser)
+* Lektier: Speciel, sendes til forskellige emailadresser samt SMS (kan bruges til hele klasser)
 
 Alle emails bliver gemt, dvs. du får kun en email, såfremt der faktisk
 er kommet nyt.
@@ -85,7 +85,11 @@ Kør følgende kommando, og besvar spørgsmålene
 
 Til slut testes programmet ved at køre det
 
-    fskintra.py --sms navn
+    fskintra.py
+
+Eller hvis der skal sendes lektie email/sms til en sms-gruppe
+
+    fskintra.py --sms gruppe
 
 Din opsætning gemmes i $HOME/.skoleintra/skoleintra.txt. Såfremt du
 kun skal rette lidt kan det evt. være smartest at rette direkte i
@@ -107,21 +111,24 @@ Indsæt linier:
     lektieids=[1, 2, 3]
 hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
 
-Ønskes SMS med info om lektier, skal der oprettes en sektion som denne
-for hver barn/gruppe der skal have en SMS.
+Ønskes Email eller SMS med info om lektier, skal der oprettes en sektion som denne
+for hver barn/gruppe der skal have en Email eller SMS.
 
 Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med
 lektier og forældre kan få en email.
 
-Der skal laves en smsgw-gruppe, se [smsgw-xxx] eksemplet herunder.
+Der skal laves en smsgw-gruppe for hver gw=xxx is sms-grupperne, se
+[smsgw-xxx] eksemplet herunder.
 
 Desuden skal der laves en [sms-navn] seksion for hver klasse (et eller
 flere børn/forældre)
 
 - navn: [sms-<navn>] <navn> erstattes med navnet på sms-gruppen.
-- gw: SMS gateway, pt. kun understøttelse for smsit.dk og
-  android app
-  (https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway)
+- gw: SMS gateway,
+  Pt. kun understøttelse for:
+  - NoSMSGW (disable afsendelse af SMS for gruppen) - Kræver ingen smsgw
+  - smsit.dk
+  - android app https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
 - lektieid: Er id - se lektieids ovenfor
 - days: Antal skoledage der skal sendes lektier for
 - min_msgs_days: Minimum antal dage med lektier der skal sendes for

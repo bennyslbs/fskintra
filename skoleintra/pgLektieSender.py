@@ -32,8 +32,10 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
     status = -1
     statusStr = ''
 
-    # if-elif with all supported SMS gateways
-    if sms_cfg['smsgw']['gw'] == 'smsit.dk':
+    # if-elif with NoSMSGW and all supported SMS gateways
+    if sms_cfg['smsgw']['gw'] == 'NoSMSGW':
+        return 0, u'Info: SMS not sent to %s since NoSMSGW is used for \'%s\'' % (to, 'sms-'+sms_grp)
+    elif sms_cfg['smsgw']['gw'] == 'smsit.dk':
         url = 'http://www.smsit.dk/api/sendSms.php'
         params = urllib.urlencode({
             'apiKey': sms_cfg['smsgw']['key'],

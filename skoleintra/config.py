@@ -268,11 +268,15 @@ if options.sms:
         SMS[s] = {}
         sms_grp = 'sms-'+s
         try:
-            SMS[s]['smsgw'] = getSmsGw(cfg.get(sms_grp, 'gw'))
+            if cfg.get(sms_grp, 'gw') == 'NoSMSGW':
+                SMS[s]['smsgw'] = {}
+                SMS[s]['smsgw']['gw'] = 'NoSMSGW'
+            else:
+                SMS[s]['smsgw'] = getSmsGw(cfg.get(sms_grp, 'gw'))
+                SMS[s]['from'] = cfg.get(sms_grp, 'from')
             SMS[s]['id'] = int(cfg.get(sms_grp, 'lektieid'))
             SMS[s]['days'] = int(cfg.get(sms_grp, 'days'))
             SMS[s]['min_msgs_days'] = int(cfg.get(sms_grp, 'min_msgs_days'))
-            SMS[s]['from'] = cfg.get(sms_grp, 'from')
             SMS[s]['to'] = cfg.get(sms_grp, 'to')
         except ConfigParser.NoOptionError, e:
             parser.error(u"Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.\nRet direkte i '%s'." % (CONFIG_FN, e.option, sms_grp, CONFIG_FN))

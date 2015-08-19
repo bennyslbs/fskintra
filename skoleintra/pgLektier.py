@@ -46,8 +46,9 @@ def wpParseLektier(bs, id):
                     entr[k] = entr[k].decode("UTF-8").strip()
                     if entr[k] == '':
                         entr[k] = None
-                if entr[0] != None:
-                    fag[beautifyFagName(entr[0])] = entr[1]
+                if len(entr) == 2: # Sometimes entr[1] is mission - seen if table boundraries are missing and no homework for fag.
+                    if entr[0] != None:
+                        fag[beautifyFagName(entr[0])] = entr[1]
             res.append({
                 'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
                 'weekday' : match_date.group('weekday'),

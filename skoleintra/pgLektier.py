@@ -119,7 +119,16 @@ def wpOrgPrintLektier(kl, lektier):
         res += "*** %s d. %s\n" % (lektier[i]['weekday'], lektier[i]['day'].strftime("%d.%m.%Y"))
         for fag, lektie in lektier[i]['lektier'].items():
             if lektie:
-                res += '- ' + fag + ': ' + lektie + "\n"
+                if fag != '-':
+                    fagStr = '- ' + fag + ': '
+                    lektieStr = lektie
+                else:
+                    # Special case: No fag name, also remove tr and td's (both start+end)
+                    fagStr = '- '
+                    lektieStr = re.sub("<\/?(tr|td).*?>", "", lektie)
+                lektieStr = lektieStr.replace("\n", "\n" + ''.ljust(len(fagStr)))
+                res += fagStr + lektieStr + "\n"
+
     return res.encode('utf8')
 
 def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):

@@ -238,10 +238,15 @@ def main(db):
                             if l[1]:
                                 lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
                                 lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
+                                lektieNoLink = re.sub('\n', '</br>\n', lektieNoLink)
                             upd_info = ''
                             if l[3]:
                                 upd_info = ', opdateret: '+l[3]
-                            print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
+                            if l[0] != '-': # Fag != '-'
+                                print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
+                            else:
+                                print '            <li><span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(lektieNoLink, l[2], upd_info)
+
                         print '          </ul>'
                         print '        </li>'
                 print '      </ul>'

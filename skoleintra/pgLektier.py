@@ -36,19 +36,35 @@ def wpParseLektier(bs, id):
             attachments = maint[i +1].find('menu')
             if attachments:
                 attachments = attachments.findAll('a')
-            for j in xrange(1, len(maint[i +1].find('table').tbody.findAll('tr'))):
-                entr = maint[i +1].find('table').tbody.findAll('tr')[j].findAll('td')
+            try:
+                for j in xrange(1, len(maint[i +1].find('table').tbody.findAll('tr'))):
+                    entr = maint[i +1].find('table').tbody.findAll('tr')[j].findAll('td')
+                    # Get content
+                    for k in xrange(len(entr)):
+                        entr[k] = entr[k].renderContents().strip()
+                        entr[k] = entr[k].replace("<div>", "").replace("</div>", "") # Remove <div>
+                        entr[k] = entr[k].replace("&amp;", "&") # Replace some html escaping
+                        entr[k] = entr[k].decode("UTF-8").strip()
+                        if entr[k] == '':
+                            entr[k] = None
+                    if len(entr) == 2: # Sometimes entr[1] is mission - seen if table boundraries are missing and no homework for fag.
+                        if entr[0] != None:
+                            fag[beautifyFagName(entr[0])] = entr[1]
+            except:
+                # Just one entry ... or don't try to split it
+                entr = maint[i +1]
                 # Get content
-                for k in xrange(len(entr)):
-                    entr[k] = entr[k].renderContents().strip()
-                    entr[k] = entr[k].replace("<div>", "").replace("</div>", "") # Remove <div>
-                    entr[k] = entr[k].replace("&amp;", "&") # Replace some html escaping
-                    entr[k] = entr[k].decode("UTF-8").strip()
-                    if entr[k] == '':
-                        entr[k] = None
-                if len(entr) == 2: # Sometimes entr[1] is mission - seen if table boundraries are missing and no homework for fag.
-                    if entr[0] != None:
-                        fag[beautifyFagName(entr[0])] = entr[1]
+                entr = entr.renderContents().strip()
+                #entr = entr.replace(' ', '') # Invisible/&nbsp like char
+                entr = re.sub(r'<td.*?>(&nbsp;| | )*</td>', '<td></td>', entr) # Minimize empty/invisible content td's
+                entr = re.sub(r'<tr.*?>(<td.*?>(&nbsp;| )*</td>)*</tr>', '', entr) # Remove empty table rows
+                entr = entr.replace("<div>", "").replace("</div>", "") # Remove <div>
+                entr = entr.replace("&amp;", "&") # Replace some html escaping
+                entr = entr.decode("UTF-8").strip()
+                if entr == '':
+                    entr = None
+                if entr != None:
+                    fag['-'] = entr
             res.append({
                 'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
                 'weekday' : match_date.group('weekday'),
@@ -169,7 +185,11 @@ def getLektieLister():
             fh = open('/tmp/a.html', 'w')
             fh.write(str(bs))
             fh.close()
-        kl, lektier = wpParseLektier(bs, id)
+        try:
+            kl, lektier = wpParseLektier(bs, id)
+        except:
+            kl = None
+            config.log(u'Error parsing lektier for kl.', 0)
         # Fill content into DB
         if kl: # If kl = None it is an illegal ID (no header, so propably illegal ID)
             pgLektieDB.updateLektieDb(id, kl, lektier)

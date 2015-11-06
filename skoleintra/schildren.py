@@ -8,7 +8,7 @@ import surllib
 URL_PREFIX = 'http://%s/Infoweb/Fi2/' % config.HOSTNAME
 URL = URL_PREFIX + 'Faneblade.asp'
 
-SKOLEBESTYRELSE_NAME = 'Skolebestyrelsen'
+NAMES_IGNORE = [u'Skolebestyrelsen', u'Kontaktforældre']
 
 # map of children => pageToSelectChild
 _children = None
@@ -31,7 +31,7 @@ def skoleGetChildren():
             href = a['href']
             name = a.span.text
 
-            if name == SKOLEBESTYRELSE_NAME:
+            if name in NAMES_IGNORE:
                 config.log(u'Ignorerer [%s]' % name)
                 continue
 
@@ -49,7 +49,7 @@ def skoleSelectChild(name):
     else:
         config.log(u'Vælger [%s]' % name)
         url = URL_PREFIX + _children[name]
-        _ = surllib.skoleGetURL(url, False, noCache=True)
+        surllib.skoleGetURL(url, False, noCache=True)
         config.CHILDNAME = name
 
 if False:

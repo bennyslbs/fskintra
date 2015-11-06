@@ -39,8 +39,13 @@ def docFindDocuments(bs, foldername='Dokumentarkiv'):
         # find url
         url = links[0]['href']
         config.log(u'Kigger på dokument url: %s' % url, 3)
-        if 'visdokument' in url.lower():
+        m = re.match(r"javascript:visdokument\((\d+),'([^']+)'\).*", url)
+        if m:
+            url = m.group(2)
+        elif 'visdokument' in url.lower():
             url = URL_DOC + re.search('.*?(\d+)', links[0]['href']).group(1)
+        elif links[0].has_key('onclick') and 'visdok' in links[0]['onclick']:
+            url = url  # href is actually the file url
         else:
             assert('Dokliste' in url)
         url = urllib.quote(url.encode('iso-8859-1'), safe=':/?=&%')

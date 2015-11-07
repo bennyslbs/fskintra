@@ -25,7 +25,8 @@ CORRUPURL://, og httpCORRUPURL:// håndterer browsere (forhåbntlig)
 ikke. Dette er for ikke at få referencer til lektie-websiden på andre
 web-servere, hvis der ikke bruges password.
 
-[Eksempel (favicons virker ikke i eksmplet, så der mangler et ikon hvis du bookmarker)](lektieweb_ex.html).
+[Eksempel](http://slbs.dk/skfi/lektieweb_ex.html) eller 
+[lektieweb_ex.html (skal først gemmes lokalt; favicons virker ikke i eksmplet, så der mangler et ikon hvis du bookmarker)](lektieweb_ex.html).
 
 Lektie Email/SMS
 ================

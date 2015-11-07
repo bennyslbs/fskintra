@@ -12,7 +12,9 @@ flg. steder:
 * Dialog/beskeder: Nye beskeder (både sendt og modtaget)
 * Arkiv/dokumenter: Nye dokumenter
 * Ugeplaner: Nye ugeplaner
-* Lektier: Speciel, sendes til forskellige emailadresser samt SMS (kan bruges til hele klasser)
+* Lektier: Speciel, sendes til forskellige emailadresser samt SMS
+  Se [README.lektier.md](README.lektier.md) for yderligere detailer.
+  Kan bruges til hele klasser/skoler.
 
 Alle emails bliver gemt, dvs. du får kun en email, såfremt der faktisk
 er kommet nyt.
@@ -87,107 +89,12 @@ Til slut testes programmet ved at køre det
 
     fskintra.py
 
-Eller hvis der skal sendes lektie email/sms til en sms-gruppe
-
-    fskintra.py --sms gruppe
-
 Din opsætning gemmes i $HOME/.skoleintra/skoleintra.txt. Såfremt du
 kun skal rette lidt kan det evt. være smartest at rette direkte i
 filen i stedet for at køre --config igen.
 
 I $HOME/.skoleintra gemmes også alt hentet indhold og alle sendte
 emails.
-
-Opsætning til lektie Email/SMS
-------------------------------
-
-Ønskes info om lektier, skal dette opsættes manuelt efter ovenstående
-konfiguration.
-
-i configurationsfilen, ~/.skoleintra/skoleintra.txt:
-Indsæt linier:
-    # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
-    lektiedb=~/.skoleintra/lektier.db
-    lektieids=[1, 2, 3]
-hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
-
-Ønskes Email eller SMS med info om lektier, skal der oprettes en sektion som denne
-for hver barn/gruppe der skal have en Email eller SMS.
-
-Dette er tiltænkt at barn/børn kan få en SMS efter skoletid med
-lektier og forældre kan få en email.
-
-Der skal laves en smsgw-gruppe for hver gw=xxx is sms-grupperne, se
-[smsgw-xxx] eksemplet herunder.
-
-Desuden skal der laves en [sms-navn] seksion for hver klasse (et eller
-flere børn/forældre)
-
-- navn: [sms-<navn>] <navn> erstattes med navnet på sms-gruppen.
-- gw: SMS gateway,
-  Pt. kun understøttelse for:
-  - NoSMSGW (disable afsendelse af SMS for gruppen) - Kræver ingen smsgw
-  - smsit.dk
-  - android app https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
-- lektieid: Er id - se lektieids ovenfor
-- days: Antal skoledage der skal sendes lektier for
-- min_msgs_days: Minimum antal dage med lektier der skal sendes for
-  (hvis der ikke er lektier til hver dag)
-
-- from: Tekst der angiver afsender (max 11 bgstaver, nogle
-  telefoner/udbydere fjerner mellemrum)
-
-  Bruges kun for nogle SMS Gateways (ikke for afsendelse fra SMS
-  kort/alm. tlf. abonnement, men for smsit.dk
-- to: Liste med Modtagere, emailadresser og mobilnr.
-  nr. +45 bliver automatisk sat foran (hvis krævet), og må ikke være
-  inkluderet her.
-
-Skal der sendes SMS/email til flere klasser skal der oprettes flere
-[sms-navnXX] grupper.
-
-Alle emails sendes som een email, pt. sendes til Bcc adresser, men
-dette kan blive ændret uden varsel.
-
-For at sende en SMS oprettes der er cronjob, der kalder
-"/sti/til/fskintra.py --sms navn", og kører som dig, eller en anden
-bruger der har ~/.skoleintra/skoleintra.txt.
-
-Skal der sendes sms til flere sms-grupper samtidig, ændres til
-"--sms navn1,navn2" (uden mellemrum imellem de forskellige sms-grupper).
-
-    [smsgw-xxx]
-    # Supported gw's:
-    # sms_gw=smsit.dk
-    #    needs sms_key=<password key>
-    # sms_gw=eu.apksoft.android.smsgateway
-    #    needs sms_key=<password> (not tested without)
-    #    See https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
-    # Ex.:
-    [smsgw-smsit.dk]
-    gw=smsit.dk
-    key=YourCodeFromSmsit.dk
-    url=DummyNotNeeded
-
-    [smsgw-1]
-    gw=eu.apksoft.android.smsgateway
-    url=http://1.2.3.4:9090/sendsms
-    key=MyPassWord
-
-    [sms-navn]
-    gw=smsgw-1
-    lektieid=1
-    days=1
-    min_msgs_days=1
-    from=Lektier
-    to=
-    	# Peter
-	Peter Pedersen <peter@example.org>
-	12345678
-	# Peters forældre
-	hjemme_v_peter@example.org
-	# Søren
-	soren@example.org
 
 Cron-job
 --------
@@ -245,94 +152,6 @@ galt:
 Du er evt. også velkommen til at kontakte mig. Såfremt det ikke
 virker, må du meget gerne vedhæfte hvad der bliver skrevet, når
 fskintra.py køres med -v.
-
-Lektie Email/SMS
-================
-
-Lektie Email/SMS er en ekstra feature, som sender Email/SMS med lektier.
-
-Denne funktion kan bruges til at sende email/SMS til flere forældre og
-elever fra flere forskellige klasser.
-
-Opsætningen inkluderer ikke dette, og skal gøres direkte i
-konfigurationsfilen, se ovenfor.
-
-Lektie SMS format
------------------
-
-Lektie SMS er lidt kompakt, både for at spare på antal SMS'er og for
-at få mindre fyld på en lille skærm.
-
-Eks. (normalt vil man nok ikke få SMS om lektier for så lang tid):
-
-    Mat: Matematiklektier til i morgen
-    Dan: Dansk til i morgen
-    F:
-    Eng: Engelsk lektier til fredag
-    M1:
-    Dan: Dansk til mandag i næste uge
-    M2:
-    Dan: Dansk til mandag om 2 uger
-
-Forklaring:
-
-Lektier til imorgen står uden ugedag, men med fagets navn (ofte
-forkortet), med eet fag pr. linie.
-
-Ved skift til ny ugedag står der 1-2 bogstavsforkotelse for ugedagen
-(M, Ti, O, To, F, L, S) og hvis det er en uge frem står der et 1-tal
-bagefter, 2 uger frem et 2-tal osv. og : samt ny linie.
-
-Lektie Web
-==========
-
-Indholdet er det samme som for Lektie Email/SMS, men her vises
-indholdet fra databasen over lektier.
-
-Dette bør kun stilles tilrådighed for andre efter aftale med den
-dataansvarlige (skolelederen).
-
-Funktionaliteten kan bruges til at hente lektier for flere klasser og
-vises samlet for hver enkelt dag.
-
-Links i lektier vil blive lavet korrupte idet :// erstattes af
-CORRUPURL://, og httpCORRUPURL:// håndterer browsere (forhåbntlig)
-ikke. Dette er for ikke at få referencer til lektie-websiden på andre
-web-servere, hvis der ikke bruges password.
-
-Opsætning
----------
-
-For at få gemt lektier i databasen skal fskintra køres f. eks. fra
-cron, hvor lektiedb og lektieids er opsat. Se Opsætning til lektie
-Email/SMS.
-
-Lektie Web viser udelukkende indhold fra databasen, men læser ikke
-konfiguationsfilen skoleintra.txt.
-
-I en webserver folder, som kan eksekvere python kode
-(f. eks. cgi-bin) laves der symlink til <fskintra>/www/lektier. Det
-skal være et symlink. Hvis det er en kopi, skal der ændres i kopien -
-se hjælp i filen.
-
-Hvis det skal bruges fra smartphones, er det lettest at undgå
-passwords, men have en url der er lang og med tilfældige karakterer +
-bede søgemaskiner om at ignorere det vha. robots.txt. Selvfølgelig
-skal der ikke være links til dette fra andre websites.
-
-Er der ikke password, husk da at rename filen lektier til noget med en
-række tilfældige karakterer!
-
-Der skal laves et symlink til lektie.db filen. sym-linket skal ligge
-samme sted og have samme navn som symlinket til python scriptet
-lekter, dog tilføjet endelsen .db. Hvis python-script linket hedder
-/var/www/cgi-bin/lektier.py, skal lektier.db linket hedde
-/var/www/cgi-bin/lektier.py.db.
-
-I roden af webserveren bør der ligeledes laves et symlink til eller
-kopi af www/root/fskintra. Der ligger favicons mm. fra
-http://realfavicongenerator.net/ og en enkelt smily som bruges istedet
-for alle skoleintra editor-smilies.
 
 Hvem?
 =====

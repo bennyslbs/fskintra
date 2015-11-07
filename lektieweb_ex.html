@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Lektier</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
+    <style>
+     .oldday, .today, .nextday, .day, .kl {
+       font-weight: bold;
+       font-size: large;
+     }
+     .oldday {
+       color: rgb(100,100,100);
+     }
+     .today {
+       color: rgb(155,50,50);
+     }
+     .nextday {
+       color: rgb(255,50,50);
+     }
+     .day {
+       color: rgb(0,0,200);
+     }
+     .fag {
+     }
+     .do {
+     }
+     .seen {
+       font-size: small;
+       color: rgb(128,128,128);
+     }
+     li {
+       margin: 0;
+       padding: 0.0em;
+     }
+    </style>
+  </head>
+  <body>
+    <h1>Eksempel på lektie-web</h1>
+    <p>
+      Herunder er der et eksempel på hvordan en lektiebog kan se ud for 4 klasser grupperet efter dato.
+      Udtrækket er fra fredag d. 14.8.
+      <ul>
+	<li>Tidligere datoer er grå, idag er rødbrun</li>
+	<li>I dag er rødbrun</li>
+	<li>Næste skoledag er rød</li>
+	<li>Kommende dage er sorte</li>
+      </ul>
+    </p>
+    <h1>Lektier for 7., 8A., 8B., 9.  klasse</h1>
+    <p><span class="oldday">Torsdag d. 13.8.</span>
+      <ul>
+        <li><span class="kl">7. klasse</span>
+          <ul>
+            <li><span class="fag">Biologi</span>: <span class="do">Vi ...</span> <span class="seen">(Set 2015-08-11 09:00:54)</span></li>
+            <li><span class="fag">Geografi</span>: <span class="do">Læs ...</span> <span class="seen">(Set 2015-08-11 11:01:06)</span></li>
+            <li><span class="fag">Dan</span>: <span class="do">I skal ...</span> <span class="seen">(Set 2015-08-12 11:00:57)</span></li>
+            <li><span class="fag">Hist</span>: <span class="do">Husk historiebogen <strong>og jeres computere</strong></span> <span class="seen">(Set 2015-08-12 15:01:12)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8A. klasse</span>
+          <ul>
+            <li><span class="fag">Biologi</span>: <span class="do">Ligesom ...</span> <span class="seen">(Set 2015-08-11 09:00:54)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <p><span class="today">Fredag d. 14.8.</span>
+      <ul>
+        <li><span class="kl">7. klasse</span>
+          <ul>
+            <li><span class="fag">Biologi</span>: <span class="do"><span style="font-size: 10.6666669845581px; line-height: normal; background-color: rgb(252, 252, 255);">Lav dit ...</span></span> <span class="seen">(Set 2015-08-11 11:01:06)</span></li>
+            <li><span class="fag">Dan</span>: <span class="do">Lav...</span> <span class="seen">(Set 2015-08-13 09:00:56)</span></li>
+            <li><span class="fag">Mat</span>: <span class="do">Husk ...</span> <span class="seen">(Set 2015-08-13 15:01:09)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8A. klasse</span>
+          <ul>
+            <li><span class="fag">Dan</span>: <span class="do">Arbejd videre med torsdagens opgave</span> <span class="seen">(Set 2015-08-13 16:01:05)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8B. klasse</span>
+          <ul>
+            <li><span class="fag">Bio/Geo</span>: <span class="do">Opstartstime</span> <span class="seen">(Set 2015-08-13 16:01:05)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">9. klasse</span>
+          <ul>
+            <li><span class="fag">Biologi</span>: <span class="do">Medbring ...</span> <span class="seen">(Set 2015-08-12 15:01:13)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <p><span class="nextday">Mandag d. 17.8.</span>
+      <ul>
+        <li><span class="kl">7. klasse</span>
+          <ul>
+            <li><span class="fag">Mat</span>: <span class="do">Lav ...</span> <span class="seen">(Set 2015-08-13 15:01:09)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8A. klasse</span>
+          <ul>
+            <li><span class="fag">Mat</span>: <span class="do">Find primtal</span> <span class="seen">(Set 2015-08-13 15:01:10)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8B. klasse</span>
+          <ul>
+            <li><span class="fag">Eng</span>: <span class="do">Work...</span> <span class="seen">(Set 2015-08-13 12:01:02)</span></li>
+            <li><span class="fag">Mat</span>: <span class="do">0^0</span> <span class="seen">(Set 2015-08-13 15:01:11)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <p><span class="day">Tirsdag d. 18.8.</span>
+      <ul>
+        <li><span class="kl">8A. klasse</span>
+          <ul>
+            <li><span class="fag">Hist</span>: <span class="do">...</span> <span class="seen">(Set 2015-08-13 15:01:10)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">9. klasse</span>
+          <ul>
+            <li><span class="fag">Fysik</span>: <span class="do">...</span> <span class="seen">(Set 2015-08-14 15:01:08)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <p><span class="day">Torsdag d. 20.8.</span>
+      <ul>
+        <li><span class="kl">8A. klasse</span>
+          <ul>
+            <li><span class="fag">Biologi</span>: <span class="do">Læs ...</span> <span class="seen">(Set 2015-08-13 10:00:58)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+    <p><span class="day">Fredag d. 21.8.</span>
+      <ul>
+        <li><span class="kl">7. klasse</span>
+          <ul>
+            <li><span class="fag">Mat</span>: <span class="do">Husk ...</span> <span class="seen">(Set 2015-08-14 12:01:14)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">8B. klasse</span>
+          <ul>
+            <li><span class="fag">Dan</span>: <span class="do">Lav ...</span> <span class="seen">(Set 2015-08-14 10:01:07)</span></li>
+          </ul>
+        </li>
+        <li><span class="kl">9. klasse</span>
+          <ul>
+            <li><span class="fag">Samfundsfag</span>: <span class="do">Læs artikler på samfundsfaget.dk</span> <span class="seen">(Set 2015-08-14 10:01:07)</span></li>
+          </ul>
+        </li>
+      </ul>
+    </p>
+  </body>
+</html>

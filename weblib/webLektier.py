@@ -80,25 +80,26 @@ def main(db):
     <meta charset="UTF-8">
     <title>Lektier</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/fskintra/favicons/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/fskintra/favicons/apple-touch-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/fskintra/favicons/apple-touch-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/fskintra/favicons/apple-touch-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/fskintra/favicons/apple-touch-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/fskintra/favicons/apple-touch-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/fskintra/favicons/apple-touch-icon-180x180.png">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/android-chrome-192x192.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png" sizes="16x16">
-    <link rel="manifest" href="/fskintra/favicons/manifest.json">
-    <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="72x72" href="/fskintra/favicons/apple-touch-icon-72x72.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="76x76" href="/fskintra/favicons/apple-touch-icon-76x76.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="114x114" href="/fskintra/favicons/apple-touch-icon-114x114.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="120x120" href="/fskintra/favicons/apple-touch-icon-120x120.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="144x144" href="/fskintra/favicons/apple-touch-icon-144x144.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="152x152" href="/fskintra/favicons/apple-touch-icon-152x152.png?v=1.1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/fskintra/favicons/apple-touch-icon-180x180.png?v=1.1.0">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-32x32.png?v=1.1.0" sizes="32x32">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/android-chrome-192x192.png?v=1.1.0" sizes="192x192">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png?v=1.1.0" sizes="96x96">
+    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png?v=1.1.0" sizes="16x16">
+    <link rel="manifest" href="/fskintra/favicons/manifest.json?v=1.1.0">
+    <link rel="mask-icon" href="/fskintra/favicons/safari-pinned-tab.svg?v=1.1.0" color="#5b71d5">
+    <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico?v=1.1.0">
     <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png">
-    <meta name="msapplication-config" content="/fskintra/favicons/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png?v=1.1.0">
+    <meta name="msapplication-config" content="/fskintra/favicons/browserconfig.xml?v=1.1.0">
+    <meta name="theme-color" content="#505050">
 
     <style>
      .oldday, .today, .nextday, .day, .kl {

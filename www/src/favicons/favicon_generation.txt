@@ -1,0 +1,55 @@
+# -*-org-*-
+* Generation of favicons
+Generator url: http://realfavicongenerator.net/
+
+Settings:
+- Favicon for iOS - Web Clip
+  - Settings
+    - Default :: Add a solid, plain background to fill the transparent regions.
+    - Default :: Background color: #ffffff
+
+- Favicon for Android Chrome
+  - Main settings:
+    - Default :: No change, keep the master picture as it is.
+    - Non-default :: App name: LektieWeb
+    - Non-default :: Theme color: #505050
+  - Options
+    - Android Chrome M39 introduces a manifest that helps you refine the behavior of the Add to Homescreen link.
+      - Non-default :: Standalone. In this mode, Android Chrome gives a little more "native" style to the opened page. In particular, it lets you enforce the start URL and screen orientation. It also remove the navigation bar and gives your web site its own tab in the task switcher. 
+        ... if standalone, then the last lines of manifest.json are:
+#+begin_src
+	],
+    "display": "standalone"
+}
+#+end_src
+else:
+#+begin_src
+	]
+}
+#+end_src
+
+    - Orientation
+      - Default :: Not specified...
+
+- Other platforms
+  - Safari Pinned Tab
+    - Default... until I created white around letters, then:
+    - Non-default :: Turn your picture into a monochrom icon. Play with the threshold to get the best result.
+    - Non-default :: Theme color: #5b71d5
+  - Windows 8 and 10
+    - Default :: I don't care
+
+- Favicon Generator Options
+  - Path
+    - Non-default :: I cannot or I do not want to place favicon files at the root of my web site. Instead I will place them here:
+      /fskintra/favicons
+  - Versions/Refresh
+    - Non-default :: The web site is already in production and many people already visited it. I want returning visitors to see my new favicon, not the old one.
+    - v = 1.1.0
+  - Compression
+    - Non-default :: High quality, low compression factor
+  - Scaling algorithm
+    - Default :: Mitchell
+  - App name
+    - No app name
+

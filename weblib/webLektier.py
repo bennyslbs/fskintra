@@ -78,7 +78,7 @@ def main(db):
     print """<html>
   <head>
     <meta charset="UTF-8">
-    <title>Lektier</title>
+    <title>LektieWeb</title>
 
     <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png?v=1.1.0">
     <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png?v=1.1.0">

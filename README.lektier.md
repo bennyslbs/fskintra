@@ -219,3 +219,14 @@ I roden af webserveren bør der ligeledes laves et symlink til eller
 kopi af www/root/fskintra. Der ligger favicons mm. fra
 http://realfavicongenerator.net/ og en enkelt smily som bruges istedet
 for alle skoleintra editor-smilies.
+
+Ekstra opsætning i <site>.conf apache konfigurationsfilen:
+#+begin_src
+	ScriptAlias /cgi-bin/ /var/www/cgi-bin/
+	<Directory /var/www/cgi-bin>
+	    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+	    Order allow,deny
+	    Allow from all
+	    SetHandler cgi-script
+        </Directory>
+#+end_src

@@ -189,7 +189,8 @@ def getLektieLister():
         config.log(u'Kigger efter opdaterede lektier for id %d, og gemmer i lektiedatabasen' % id)
 
         # read the initial page
-        bs = surllib.skoleGetURL(URL_MAIN + "ID=%d" % id, True, True)
+        url = URL_MAIN + "ID=%d" % id
+        bs = surllib.skoleGetURL(url, True, True)
         #f = open('/tmp/a.html', 'r')
         #bs = surllib.beautify(f.read())
 
@@ -202,6 +203,8 @@ def getLektieLister():
         except:
             kl = None
             config.log(u'Error parsing lektier for kl.', 0)
+        if not kl:
+            config.log(u'''Error: Class name couldn\'t be read from title at url: '%s'.''' % (url))
         # Fill content into DB
         if kl: # If kl = None it is an illegal ID (no header, so propably illegal ID)
             pgLektieDB.updateLektieDb(id, kl, lektier)

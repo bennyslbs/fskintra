@@ -248,3 +248,4 @@ TODO ved nyt skoleår
     sqlite> select * from classes;
     <list of ID and Class name are shown>
     sqlite> delete from classes where id=<ID>;
+* Check at alt ser ok ud: gå ind på Lektieweb, og tilføj f. eks `&kl=all` eller `&kl=[id0, id1, ...]` til urlen (overruler `&klX=`)

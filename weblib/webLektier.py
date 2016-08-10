@@ -9,6 +9,7 @@ import datetime
 import cgi
 import sys
 import re
+import json
 
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
@@ -189,15 +190,26 @@ def main(db):
         print '</html>'
     else:  # Arguments given, show data
         classes = getClasses(dbc)
-        # Sanitize arguments kl0-kl4 which classes to show for, store relevant data in lektieIDs
+        # Get which lektieIDs to show, either via kl=all, kl=[id1, id2, ...] or kl0=id0, kl1=id1, .., kl4=id4
         lektieIDs = [];
-        for kl in ['kl0', 'kl1', 'kl2', 'kl3', 'kl4']:
-            try:
-                idInt = int(arguments[kl].value)
-                if idInt in classes:
-                    lektieIDs.append(idInt)
-            except:
-                pass
+        if 'kl' in arguments:
+            if arguments['kl'].value == 'all':
+                lektieIDs = sorted(classes, key=classes.get)
+            elif re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', arguments['kl'].value):
+                # Shall be on list form [num, num, num]
+                lektieIDs = []
+                for idInt in json.loads(arguments['kl'].value):
+                    if idInt in classes:
+                        lektieIDs.append(idInt)
+        else:
+            # Sanitize arguments kl0-kl4 which classes to show for, store relevant data in lektieIDs
+            for kl in ['kl0', 'kl1', 'kl2', 'kl3', 'kl4']:
+                try:
+                    idInt = int(arguments[kl].value)
+                    if idInt in classes:
+                        lektieIDs.append(idInt)
+                except:
+                    pass
 
         # Sanitize predays
         try:

@@ -165,7 +165,7 @@ def main(db):
             print '</select></br>'
         print '</p>'
         print '<p>'
-        print 'Antal dage f&oslash;r i morgen: <select name=predays>'
+        print 'Antal dage bagud: <select name=predays>'
         for i in range(0,8):
             print '<option',
             if i == 1:  # Selected
@@ -174,13 +174,12 @@ def main(db):
         print '</select> (0=Fra i morgen, 1 fra i dag, ...)</br>'
         print '</p>'
         print '<p>'
-        print 'Antal dage efter idag:<select name=days>'
+        print 'Antal dage fremad:<select name=days>'
         for i in range(1,30+1):
             print '<option',
             if i == 30:  # Selected
                 print ' selected',
             print ' value="%d">%d</option>' % (i, i)
-            print '<option value="%d">%d</option>' % (i, i)
         print "</select></br>"
         print '</p>'
         print '<p>'

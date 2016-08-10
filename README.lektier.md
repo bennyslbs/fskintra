@@ -230,3 +230,21 @@ Ekstra opsætning i <site>.conf apache konfigurationsfilen:
 	    SetHandler cgi-script
         </Directory>
 #+end_src
+
+TODO ved nyt skoleår
+===============================
+
+* Opdater klasser i config fil
+.* Tilføj nye klasser og fjern gamle klasser fra `lektieids=[...]`
+
+   Note: Skolens medarbejdere skal manuelt ændre klassens navne i
+   lektierbøgerne i skoleintra, samt oprette lektiebøger for nye klasser,
+   så dette vil ikke nødvendigvis være ændret før skolestart.
+.* Inkrementer klasser i sms gruppenavnene `[sms-Xkl]`
+* Opdater hvornår klasserne har fri i `/etc/crontab`
+* Fjern gamle klasser fra classes tabellen i `lekter.db`:
+
+    sqlite3 ~/.skoleintra/lektier.db
+    sqlite> select * from classes;
+    <list of ID and Class name are shown>
+    sqlite> delete from classes where id=<ID>;

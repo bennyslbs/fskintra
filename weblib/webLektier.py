@@ -188,11 +188,14 @@ def main(db):
         print '</body>'
         print '</html>'
     else:  # Arguments given, show data
+        classes = getClasses(dbc)
         # Sanitize arguments kl0-kl4 which classes to show for, store relevant data in lektieIDs
         lektieIDs = [];
         for kl in ['kl0', 'kl1', 'kl2', 'kl3', 'kl4']:
             try:
-                lektieIDs.append(int(arguments[kl].value))
+                idInt = int(arguments[kl].value)
+                if idInt in classes:
+                    lektieIDs.append(idInt)
             except:
                 pass
 
@@ -209,7 +212,6 @@ def main(db):
             days = 30
 
         data = getLektier(dbc, lektieIDs, predays, days)
-        classes = getClasses(dbc)
 
         # Print lektier
         print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'

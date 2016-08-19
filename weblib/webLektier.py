@@ -251,7 +251,7 @@ def main(db):
                             lektieNoLink = '-'
                             if l[1]:
                                 lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
-                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/ckeditor444/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
+                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
                                 lektieNoLink = re.sub('\n', '</br>\n', lektieNoLink)
                             upd_info = ''
                             if l[3]:

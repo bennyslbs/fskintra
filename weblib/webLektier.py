@@ -139,13 +139,13 @@ def main(db):
     dbconn, dbc = connectDb(db)
 
     arguments = cgi.FieldStorage()
-    if not arguments:
+    if not arguments or (('kl' in arguments) and (arguments['kl'].value == 'all')):
         print """    <h1>Ops&aelig;tning</h1>
     <p>
       Ops&aelig;tning af web lektie overblik.
       <br>
       V&aelig;lg hvilke klasser du &oslash;nsker at se lektier for, og hvor mange dage frem.
-      Tryk p&aring; Videre.
+      Tryk p&aring; OK.
     </p>
     <p>
       Du kan bookmarke den side som du kommer til, og du vil fremover se lektier for de valgte klasser for det valgte antal dage.
@@ -183,11 +183,18 @@ def main(db):
         print "</select></br>"
         print '</p>'
         print '<p>'
-        print '<input type="submit" value="Ok">'
+        print '<input type="submit" value="   OK   ">'
         print '</form></p>'
-        print '</body>'
-        print '</html>'
-    else:  # Arguments given, show data
+        if (('kl' in arguments) and (arguments['kl'].value == 'all')):
+            pass
+            print '<hr>'
+            print '<p>'
+            print 'Nedenfor ses eksempel med alle klasser hvor LektieWeb er aktiv for.'
+            print '</br>'
+            print 'Dette er kun til demonstration, og er <strong>meget</strong> langsommere end n&aring;r de &oslash;nskede klasser er valgt.'
+            print '</p>'
+            print '<hr>'
+    if arguments:  # Arguments given, show data
         classes = getClasses(dbc)
         # Get which lektieIDs to show, either via kl=all, kl=[id1, id2, ...] or kl0=id0, kl1=id1, .., kl4=id4
         lektieIDs = [];
@@ -265,8 +272,8 @@ def main(db):
                         print '        </li>'
                 print '      </ul>'
                 print '    </p>'
-        print '  </body>'
-        print '</html>'
+    print '  </body>'
+    print '</html>'
 
 if __name__ == '__main__':
     import os, inspect

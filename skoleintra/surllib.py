@@ -115,7 +115,22 @@ def skoleLogin():
         sys.exit(0)
 
     config.log(u'skoleLogin: Brugernavn %s' % config.USERNAME, 2)
-    br.select_form(name='FrontPage_Form1')
+    try:
+        br.select_form(name='FrontPage_Form1')
+    except mechanize._mechanize.FormNotFoundError:
+        try:
+            br.select_form(nr=0)
+            if [c for c in br.form.controls if c.name == 'UserName']:
+                config.log(u'skoleLogin: Den angivne hjemmeside er til skolens "nye skoleintra".'
+                           u' Brug adressen til skolens "gamle skoleintraside".')
+                sys.exit(1)
+        except mechanize._mechanize.FormNotFoundError:
+            pass
+        config.log(u'skoleLogin: Kan ikke logge på', 0)
+        config.log(u'skoleLogin: Check at URLen %s er rigtig' % URL_LOGIN, 0)
+        config.log(u'skoleLogIn: og prøv igen senere', 0)
+        sys.exit(1)
+
     br.form.set_all_readonly(False)
     cNames = [c.name for c in br.form.controls]
     br['fBrugernavn'] = config.USERNAME
@@ -215,7 +230,7 @@ def skoleGetURL(url, asSoup=False, noCache=False, perChild=True,
         data = open(lfn, 'rb').read()
     else:
         qurl = urllib.quote(url, safe=':/?=&%')
-        msg = u'Trying to fetch %s' % qurl
+        msg = u'Prøver at hente %s' % qurl
         if perChild:
             msg += u' child='+config.CHILDNAME
         if postData:
@@ -230,6 +245,7 @@ def skoleGetURL(url, asSoup=False, noCache=False, perChild=True,
         if not os.path.isdir(ldn):
             os.makedirs(ldn)
         open(lfn, 'wb').write(data)
+        config.log(u'skoleGetURL: Gemmer siden i filen %r' % lfn, 2)
 
     if asSoup:
         data = beautify(data)

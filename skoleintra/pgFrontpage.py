@@ -69,6 +69,7 @@ def skoleCoverPic(phtml):
 
 def skoleFrontBBB(phtml):
     msg = semail.Message('frontpage', phtml)
+    [styletag.replaceWith('') for styletag in phtml.findAll('style')]
     txt = phtml.renderContents().decode('utf-8')
     txt = re.sub('<.*?>', ' ', txt)
     txt = re.sub('[ \n\t]+', ' ', txt)
@@ -194,6 +195,9 @@ def skoleFrontpage():
     for mt in data.findAll('table'):
         if mt.findParents('table') or mt.has_key('bgcolor'):
             continue
+        txt = mt.text
+        if len(txt) < 30 and txt.lower().startswith(u'forældreintra for '):
+            continue  # just the title
         maint.append(mt)
     assert(len(maint) == 1)  # assume exactly one main table
 
@@ -211,7 +215,9 @@ def skoleFrontpage():
         t = _getTitle(itag)
         if t is None:
             # not a title
-            assert(g is not None)  # the first MUST be a title
+            if not g:
+                # In some cases (slideshows), the real title may be missing
+                g.append((itags[0].text, []))
             g[-1][1].append(itag)
         else:
             # we have a new title

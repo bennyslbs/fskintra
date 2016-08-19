@@ -30,4 +30,4 @@ elif not os.path.isfile(FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE):
 # Ok, import webLektier and call main(DB)
 sys.path.append(FSK_INTRA_LOC + WEBLIB)
 import webLektier
-webLektier.main(DB)
+webLektier.main(DB, '')

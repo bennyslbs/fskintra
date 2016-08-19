@@ -68,7 +68,7 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
         data.append({'delta': delta_days, 'day': day, 'lektie': lektie, 'hit': entries_found_for_day})
     return data
 
-def main(db):
+def main(db, msg=''):
     """All lektie web implementation.
 
     To use it either use this file directly or import it from
@@ -135,6 +135,8 @@ def main(db):
   </head>
   <body>
 """
+
+    print msg # For an extra message on top of page, e.g. a notice from maintainer to LektieWeb users
 
     dbconn, dbc = connectDb(db)
 
@@ -284,4 +286,4 @@ if __name__ == '__main__':
         sys.path.insert(0, cmd_folder)
 
     import skoleintra.config
-    main(skoleintra.config.LEKTIEDB)
+    main(skoleintra.config.LEKTIEDB, '')

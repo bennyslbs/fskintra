@@ -81,14 +81,24 @@ def wpParseLektier(bs, id):
 
 def beautifyFagName(fag):
     fag = fag.title()
-    if fag == 'Dansk':
+    if re.search('Dan', fag, re.IGNORECASE):
         return 'Dan'
-    elif fag == 'Matematik':
+    elif re.search('Mat', fag, re.IGNORECASE):
         return 'Mat'
-    elif fag == 'Engelsk':
+    elif re.search('Eng', fag, re.IGNORECASE):
         return 'Eng'
-    elif fag == 'Historie':
+    elif re.search('Hist', fag, re.IGNORECASE):
         return 'Hist'
+    elif re.search('Geo', fag, re.IGNORECASE):
+        return 'Geo'
+    elif re.search('Bio', fag, re.IGNORECASE):
+        return 'Bio'
+    elif re.search('Bil', fag, re.IGNORECASE):
+        return 'Bil'
+    elif re.search('Nat', fag, re.IGNORECASE):
+        return 'Nat'
+    elif re.search('Samf', fag, re.IGNORECASE):
+        return 'Samf'
     else:
         return fag
 

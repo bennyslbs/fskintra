@@ -1,0 +1,3 @@
+[submodule "3rdparty/smsgw"]
+	path = 3rdparty/smsgw
+	url = https://github.com/bennyslbs/smsgw

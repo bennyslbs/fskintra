@@ -254,7 +254,12 @@ for dn in (CACHE_DN, MSG_DN):
 # Get SMSGW
 def getSmsGw(section):
     smsgw = {}
-    for key in ['gw', 'key', 'url']:
+    smsgw['gw'] = cfg.get(section, 'gw')
+    if smsgw['gw'] == 'smsgw':
+        keys = ['host', 'port', 'priority', 'smsgwgw', 'from', 'GetDeliveryReport', 'verbose']
+    else:
+        keys = ['key', 'url']
+    for key in keys:
         try:
             smsgw[key] = cfg.get(section, key)
         except ConfigParser.NoOptionError, e:

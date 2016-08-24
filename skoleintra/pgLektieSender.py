@@ -7,6 +7,12 @@ import pgLektier
 import urllib
 import re
 import smtplib
+import sys
+import os
+
+# Only required if sending SMS via gw=smsgw
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../3rdparty/smsgw')
+import smsgw
 
 def sendEmailMsg(subj, recip, msg):
     '''Copy + slighlty modified from semail send()'''
@@ -33,7 +39,28 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
     statusStr = ''
 
     # if-elif with NoSMSGW and all supported SMS gateways
-    if sms_cfg['smsgw']['gw'] == 'NoSMSGW':
+    if sms_cfg['smsgw']['gw'] == 'smsgw':
+        print sms_cfg['smsgw']['host'], sms_cfg['smsgw']['port']
+        gw = smsgw.smsgw(sms_cfg['smsgw']['host'], int(sms_cfg['smsgw']['port']))
+
+        params = {}
+        params['priority'] = sms_cfg['smsgw']['priority']
+        params['gw']       = sms_cfg['smsgw']['smsgwgw']
+        params['from']     = sms_cfg['from']
+        params['to']       = to
+        params['msg']      = msg.encode('utf-8')
+        params['GetDeliveryReport'] = sms_cfg['smsgw']['GetDeliveryReport']
+        params['verbose'] = False
+
+        resp = gw.send_sms(params)
+        code = resp.pop('code')
+        keys = resp.keys()
+        if len(keys) == 1 and 'msg' in keys: # Exact one key, the msg key
+            msg = resp['msg']
+        else:
+            msg = json.dumps(resp)
+        return code, msg
+    elif sms_cfg['smsgw']['gw'] == 'NoSMSGW':
         return 0, u'Info: SMS not sent to %s since NoSMSGW is used for \'%s\'' % (to, 'sms-'+sms_grp)
     elif sms_cfg['smsgw']['gw'] == 'smsit.dk':
         url = 'http://www.smsit.dk/api/sendSms.php'

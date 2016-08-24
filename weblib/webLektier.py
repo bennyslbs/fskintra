@@ -103,6 +103,10 @@ def main(db, msg=''):
     <meta name="theme-color" content="#505050">
 
     <style>
+     .button {
+      height:2em; width:6em;
+      font-size: 2em;
+     }
      .oldday, .today, .nextday, .day, .kl {
        font-weight: bold;
        font-size: large;
@@ -158,7 +162,7 @@ def main(db, msg=''):
 
         print '<p><form method="GET" action="?a=1">'
         for i in xrange(5):  # Max 5 klasser
-            print "%d. valg: <select name=kl%d>" % (i+1, i)
+            print "%d. valg: <select class=\"button\" name=kl%d>" % (i+1, i)
             print '<option value="-">-</option>'
             dbc.execute('SELECT * FROM classes order by class')
             classes = {}
@@ -167,7 +171,7 @@ def main(db, msg=''):
             print '</select></br>'
         print '</p>'
         print '<p>'
-        print 'Antal dage bagud: <select name=predays>'
+        print 'Antal dage bagud: <select class=\"button\" name=predays>'
         for i in range(0,8):
             print '<option',
             if i == 1:  # Selected
@@ -176,7 +180,7 @@ def main(db, msg=''):
         print '</select> (0=Fra i morgen, 1 fra i dag, ...)</br>'
         print '</p>'
         print '<p>'
-        print 'Antal dage fremad:<select name=days>'
+        print 'Antal dage fremad:<select class=\"button\" name=days>'
         for i in range(1,30+1):
             print '<option',
             if i == 30:  # Selected
@@ -185,7 +189,7 @@ def main(db, msg=''):
         print "</select></br>"
         print '</p>'
         print '<p>'
-        print '<input type="submit" value="   OK   ">'
+        print '<input class=\"button\" type="submit" value="   OK   ">'
         print '</form></p>'
         if (('kl' in arguments) and (arguments['kl'].value == 'all')):
             pass

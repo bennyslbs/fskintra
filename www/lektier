@@ -32,7 +32,7 @@ elif not os.path.isfile(FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE):
 # Enable debug using webLektier_debug.py if ?debug=1
 enable_debug = False
 arguments = cgi.FieldStorage()
-if not arguments or (('debug' in arguments) and (arguments['debug'].value == '1')):
+if ('debug' in arguments) and (arguments['debug'].value == '1'):
     enable_debug = True
 
 # Import webLektier( or webLektier_devel, if filename ends with .devel) and call main(DB)

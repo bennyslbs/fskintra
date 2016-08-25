@@ -65,6 +65,7 @@ Alternativt kan du bruge easy_install
 
     sudo easy_install beautifulsoup mechanize
 
+Alternativt kan det også køres via Docker, se [README.docker.md](README.docker.md).
 
 HOWTO
 =====

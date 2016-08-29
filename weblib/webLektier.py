@@ -50,7 +50,7 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
          - When it was seen first time
          - When it was updated (if no update None)
     """
-    
+
     data = []
 
     for delta_days in xrange(-predays, days):
@@ -78,64 +78,64 @@ def main(db, msg=''):
     print "Content-type: text/html\n\n"
     print """<html>
   <head>
-    <meta charset="UTF-8">
-    <title>LektieWeb</title>
+  <meta charset="UTF-8">
+  <title>LektieWeb</title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="72x72" href="/fskintra/favicons/apple-touch-icon-72x72.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="76x76" href="/fskintra/favicons/apple-touch-icon-76x76.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="114x114" href="/fskintra/favicons/apple-touch-icon-114x114.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="120x120" href="/fskintra/favicons/apple-touch-icon-120x120.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="144x144" href="/fskintra/favicons/apple-touch-icon-144x144.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="152x152" href="/fskintra/favicons/apple-touch-icon-152x152.png?v=1.1.0">
-    <link rel="apple-touch-icon" sizes="180x180" href="/fskintra/favicons/apple-touch-icon-180x180.png?v=1.1.0">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-32x32.png?v=1.1.0" sizes="32x32">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/android-chrome-192x192.png?v=1.1.0" sizes="192x192">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png?v=1.1.0" sizes="96x96">
-    <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png?v=1.1.0" sizes="16x16">
-    <link rel="manifest" href="/fskintra/favicons/manifest.json?v=1.1.0">
-    <link rel="mask-icon" href="/fskintra/favicons/safari-pinned-tab.svg?v=1.1.0" color="#5b71d5">
-    <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico?v=1.1.0">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png?v=1.1.0">
-    <meta name="msapplication-config" content="/fskintra/favicons/browserconfig.xml?v=1.1.0">
-    <meta name="theme-color" content="#505050">
+  <link rel="apple-touch-icon" sizes="57x57" href="/fskintra/favicons/apple-touch-icon-57x57.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="60x60" href="/fskintra/favicons/apple-touch-icon-60x60.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="72x72" href="/fskintra/favicons/apple-touch-icon-72x72.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="76x76" href="/fskintra/favicons/apple-touch-icon-76x76.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="114x114" href="/fskintra/favicons/apple-touch-icon-114x114.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="120x120" href="/fskintra/favicons/apple-touch-icon-120x120.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="144x144" href="/fskintra/favicons/apple-touch-icon-144x144.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="152x152" href="/fskintra/favicons/apple-touch-icon-152x152.png?v=1.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/fskintra/favicons/apple-touch-icon-180x180.png?v=1.1.0">
+  <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-32x32.png?v=1.1.0" sizes="32x32">
+  <link rel="icon" type="image/png" href="/fskintra/favicons/android-chrome-192x192.png?v=1.1.0" sizes="192x192">
+  <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png?v=1.1.0" sizes="96x96">
+  <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png?v=1.1.0" sizes="16x16">
+  <link rel="manifest" href="/fskintra/favicons/manifest.json?v=1.1.0">
+  <link rel="mask-icon" href="/fskintra/favicons/safari-pinned-tab.svg?v=1.1.0" color="#5b71d5">
+  <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico?v=1.1.0">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png?v=1.1.0">
+  <meta name="msapplication-config" content="/fskintra/favicons/browserconfig.xml?v=1.1.0">
+  <meta name="theme-color" content="#505050">
 
-    <style>
-     .button {
-      height:2em; width:6em;
-      font-size: 2em;
-     }
-     .oldday, .today, .nextday, .day, .kl {
-       font-weight: bold;
-       font-size: large;
-     }
-     .oldday {
-       color: rgb(100,100,100);
-     }
-     .today {
-       color: rgb(155,50,50);
-     }
-     .nextday {
-       color: rgb(255,50,50);
-     }
-     .day {
-       color: rgb(0,0,200);
-     }
-     .fag {
-     }
-     .do {
-     }
-     .seen {
-       font-size: small;
-       color: rgb(128,128,128);
-     }
-     li {
-       margin: 0;
-       padding: 0.0em;
-     }
-    </style>
+  <style>
+    .button {
+     height:2em; width:6em;
+     font-size: 2em;
+    }
+    .oldday, .today, .nextday, .day, .kl {
+      font-weight: bold;
+      font-size: large;
+    }
+    .oldday {
+      color: rgb(100,100,100);
+    }
+    .today {
+      color: rgb(155,50,50);
+    }
+    .nextday {
+      color: rgb(255,50,50);
+    }
+    .day {
+      color: rgb(0,0,200);
+    }
+    .fag {
+    }
+    .do {
+    }
+    .seen {
+      font-size: small;
+      color: rgb(128,128,128);
+    }
+    li {
+      margin: 0;
+      padding: 0.0em;
+    }
+  </style>
   </head>
   <body>
 """
@@ -160,7 +160,7 @@ def main(db, msg=''):
     </p>
 """
 
-        print '<p><form method="GET" action="?a=1">'
+        print '<form method="GET" action="?a=1"><p>'
         for i in xrange(5):  # Max 5 klasser
             print "%d. valg: <select class=\"button\" name=kl%d>" % (i+1, i)
             print '<option value="-">-</option>'
@@ -168,7 +168,7 @@ def main(db, msg=''):
             classes = {}
             for id, kl in dbc.fetchall():
                 print '<option value="%s">%s</option>' % (id, kl)
-            print '</select></br>'
+            print '</select><br>'
         print '</p>'
         print '<p>'
         print 'Antal dage bagud: <select class=\"button\" name=predays>'
@@ -177,7 +177,7 @@ def main(db, msg=''):
             if i == 1:  # Selected
                 print ' selected',
             print ' value="%d">%d</option>' % (i, i)
-        print '</select> (0=Fra i morgen, 1 fra i dag, ...)</br>'
+        print '</select> (0=Fra i morgen, 1 fra i dag, ...)<br>'
         print '</p>'
         print '<p>'
         print 'Antal dage fremad:<select class=\"button\" name=days>'
@@ -186,17 +186,17 @@ def main(db, msg=''):
             if i == 30:  # Selected
                 print ' selected',
             print ' value="%d">%d</option>' % (i, i)
-        print "</select></br>"
+        print "</select><br>"
         print '</p>'
         print '<p>'
         print '<input class=\"button\" type="submit" value="   OK   ">'
-        print '</form></p>'
+        print '</p></form>'
         if (('kl' in arguments) and (arguments['kl'].value == 'all')):
             pass
             print '<hr>'
             print '<p>'
             print 'Nedenfor ses eksempel med alle klasser hvor LektieWeb er aktiv for.'
-            print '</br>'
+            print '<br>'
             print 'Dette er kun til demonstration, og er <strong>meget</strong> langsommere end n&aring;r de &oslash;nskede klasser er valgt.'
             print '</p>'
             print '<hr>'
@@ -265,7 +265,7 @@ def main(db, msg=''):
                             if l[1]:
                                 lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
                                 lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
-                                lektieNoLink = re.sub('\n', '</br>\n', lektieNoLink)
+                                lektieNoLink = re.sub('\n', '<br>\n', lektieNoLink)
                             upd_info = ''
                             if l[3]:
                                 upd_info = ', opdateret: '+l[3]

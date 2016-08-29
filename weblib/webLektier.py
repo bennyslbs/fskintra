@@ -76,8 +76,9 @@ def main(db, msg=''):
     """
 
     print "Content-type: text/html\n\n"
-    print """<html>
-  <head>
+    print """<!DOCTYPE html>
+  <meta name="referrer" content="no-referrer">
+  <html lang="da">
   <meta charset="UTF-8">
   <title>LektieWeb</title>
 
@@ -95,7 +96,7 @@ def main(db, msg=''):
   <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-96x96.png?v=1.1.0" sizes="96x96">
   <link rel="icon" type="image/png" href="/fskintra/favicons/favicon-16x16.png?v=1.1.0" sizes="16x16">
   <link rel="manifest" href="/fskintra/favicons/manifest.json?v=1.1.0">
-  <link rel="mask-icon" href="/fskintra/favicons/safari-pinned-tab.svg?v=1.1.0" color="#5b71d5">
+  <link rel="mask-icon" href="/fskintra/favicons/safari-pinned-tab.svg?v=1.1.0">
   <link rel="shortcut icon" href="/fskintra/favicons/favicon.ico?v=1.1.0">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="msapplication-TileImage" content="/fskintra/favicons/mstile-144x144.png?v=1.1.0">
@@ -136,7 +137,6 @@ def main(db, msg=''):
       padding: 0.0em;
     }
   </style>
-  </head>
   <body>
 """
 

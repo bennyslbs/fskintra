@@ -35,11 +35,11 @@ arguments = cgi.FieldStorage()
 if ('debug' in arguments) and (arguments['debug'].value == '1'):
     enable_debug = True
 
-# Import webLektier( or webLektier_devel, if filename ends with .devel) and call main(DB)
+# Import webLektier( or webLektier_debug, if param debug=1) and call main(DB)
 sys.path.append(FSK_INTRA_LOC + WEBLIB)
 if enable_debug:
-    import webLektier_devel
-    webLektier_devel.main(DB, '<h2><font color="red">Development version</font></h2>Pleace use the normal <a href="%s">LektieWeb</a> instead without debug=1' % __file__)
+    import webLektier_debug
+    webLektier_debug.main(DB, '<h2><font color="red">Debug version</font></h2>Pleace use the normal <a href="%s">LektieWeb</a> instead without debug=1' % __file__)
 else:
     import webLektier
     webLektier.main(DB, '')

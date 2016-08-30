@@ -96,6 +96,7 @@ flere børn/forældre)
 - gw: SMS gateway,
   Pt. kun understøttelse for:
   - NoSMSGW (disable afsendelse af SMS for gruppen) - Kræver ingen smsgw
+  - smsgw - https://github.com/bennyslbs/smsgw (git submodul til fskintra i branchen lektier
   - smsit.dk
   - android app https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
 - lektieid: Er id - se lektieids ovenfor
@@ -127,9 +128,20 @@ Skal der sendes sms til flere sms-grupper samtidig, ændres til
 
     [smsgw-xxx]
     # Supported gw's:
-    # sms_gw=smsit.dk
-    #    needs sms_key=<password key>
-    # sms_gw=eu.apksoft.android.smsgateway
+    # sms gw=gw=NoSMSGW
+    #    needs: No parameters
+    # sms gw=smsgw
+    #    needs:
+    #    - host (host where smsgwd is running, host at server must be "like" this, e.g localhost->localhost)
+    #    - port Which port is smsgwd listening on (default 2525)
+    #    - priority (set to high number, e.g 20 (0 is highest priority))
+    #    - smsgwgw gw in smsgw, just use the cheap on or any to make higher security that an GW is working
+    #    - from Sender name/number (only works for some gw's (e.g. smsit.dk)
+    #    - GetDeliveryReport = True if delivery report should be checked, else False
+    #    - verbose, not used for now
+    # sms gw=smsit.dk
+    #    needs sms_key=<password key>, url=<dummy>
+    # sms gw=eu.apksoft.android.smsgateway
     #    needs sms_key=<password> (not tested without)
     #    See https://play.google.com/store/apps/details?id=eu.apksoft.android.smsgateway
     # Ex.:
@@ -220,16 +232,25 @@ kopi af www/root/fskintra. Der ligger favicons mm. fra
 http://realfavicongenerator.net/ og en enkelt smily som bruges istedet
 for alle skoleintra editor-smilies.
 
-Ekstra opsætning i <site>.conf apache konfigurationsfilen:
-#+begin_src
-	ScriptAlias /cgi-bin/ /var/www/cgi-bin/
-	<Directory /var/www/cgi-bin>
-	    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-	    Order allow,deny
-	    Allow from all
-	    SetHandler cgi-script
+Ekstra opsætning i <site>.conf apache konfigurationsfilen, som antager:
+- LektieWeb kan tilgås via =http(s)://eksempel.dk/<uniq string where LektieWeb is located>/lektier=
+- Folderen =/somewhere/outside/apache/webpages/= indeholder:
+  - `lektier    -> /home/<fskuser>/git/github.com/bennyslbs/fskintra/www/lektier`
+  - `lektier.db -> /home/<fskuser>/.skoleintra/lektier.db`
+
+- Hvor:
+  - `<fskuser>` er brugeren som kører fskintra.
+  - `/home/<fskuser>/git/github.com/bennyslbs/fskintra` er roden af git-repositoriet, husk det skal være branchen `lektier`.
+
+```
+        ScriptAlias /<uniq string where LektieWeb is located>/somewhere/outside/apache/webpages/
+        <Directory /var/www/fskintra.slbs.dk-cgi.hidden>
+            Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+            Order allow,deny
+            Allow from all
+            SetHandler cgi-script
         </Directory>
-#+end_src
+```
 
 TODO ved nyt skoleår
 ===============================

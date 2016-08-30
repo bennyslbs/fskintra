@@ -40,7 +40,6 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
 
     # if-elif with NoSMSGW and all supported SMS gateways
     if sms_cfg['smsgw']['gw'] == 'smsgw':
-        print sms_cfg['smsgw']['host'], sms_cfg['smsgw']['port']
         gw = smsgw.smsgw(sms_cfg['smsgw']['host'], int(sms_cfg['smsgw']['port']))
 
         params = {}
@@ -147,11 +146,14 @@ def sendEmailSms(klAll, lektierAll):
         if len(sms_to) != 0: # Any receivers and a
             if smstxt != '': # Any message to send
                 for recip in sms_to:
-                    status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
-                    if status != 0:
-                        config.log(msg, 0)
-                    else:
-                        config.log(msg)
+                    try:
+                        status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
+                        if status != 0:
+                            config.log(msg, 0)
+                        else:
+                            config.log(msg)
+                    except:
+                        config.log('Failed to send sms to [%s]: %s' % (sms_grp, recip))
             else:
                 config.log(
                     u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')

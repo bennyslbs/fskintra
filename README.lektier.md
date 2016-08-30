@@ -237,6 +237,7 @@ Ekstra opsætning i <site>.conf apache konfigurationsfilen, som antager:
 - Folderen =/somewhere/outside/apache/webpages/= indeholder:
   - `lektier    -> /home/<fskuser>/git/github.com/bennyslbs/fskintra/www/lektier`
   - `lektier.db -> /home/<fskuser>/.skoleintra/lektier.db`
+  - `urlf       -> /home/<fskuser>/git/github.com/bennyslbs/fskintra/www/urlf`
 
 - Hvor:
   - `<fskuser>` er brugeren som kører fskintra.
@@ -244,6 +245,9 @@ Ekstra opsætning i <site>.conf apache konfigurationsfilen, som antager:
 
 ```
         ScriptAlias /<uniq string where LektieWeb is located>/somewhere/outside/apache/webpages/
+        # /urlf points to urlf in the hidden dir, but is not hidden;
+        # Purpose: used to fetch a url from the hidden url via unhidden url
+        ScriptAlias /urlf /somewhere/outside/apache/webpages/urlf
         <Directory /var/www/fskintra.slbs.dk-cgi.hidden>
             Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
             Order allow,deny

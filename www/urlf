@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+
+#
+# -*- encoding: utf-8 -*-
+#
+
+# Create a symlink of this file in web server cgi-bin.
+# - If not a symlink change FSK_INTRA_LOC to point to FSK_INTRA root dir
+# Also create a symlink to lektier.db (default: ~/.skoleintra/lektier.db)
+# - The symlink name must be <name of this symlinked file>.db, otherways change DB value below.
+
+import os
+import cgi
+
+FSK_INTRA_LOC = os.path.dirname(os.path.realpath(__file__)) + '/..'
+# FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE must match location of file, update FSK_INTRA_LOC to root of fskintra
+WEBLIB = '/weblib'  # Don't change
+WEBLEKTIER_FILE = '/urlf.py'  # Don't change
+
+import sys
+import os.path
+if FSK_INTRA_LOC == '.':
+    pass
+elif not os.path.isfile(FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE):
+    sys.stderr.write('Error: FSK_INTRA_LOC must be updated in %s\n' % __file__)
+    sys.exit(1)
+
+# Enable debug using urlf_debug.py if ?debug=1
+enable_debug = False
+arguments = cgi.FieldStorage()
+if ('debug' in arguments) and (arguments['debug'].value == '1'):
+    enable_debug = True
+
+# Import urlf( or urlf_debug, if param debug=1) and call main(DB)
+sys.path.append(FSK_INTRA_LOC + WEBLIB)
+if enable_debug:
+    import urlf_debug
+    urlf_debug.main('Debug')
+else:
+    import urlf
+    urlf.main('')

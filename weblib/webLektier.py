@@ -265,6 +265,13 @@ def main(db, msg=''):
                             if l[1]:
                                 lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
                                 lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
+                                # Create a link, lektieNoLink is the wrong name
+                                # A =url line => =urlf?u=url
+                                lektieNoLink = re.sub(r'=([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'/urlf?u=\1://\2>\1://\2', lektieNoLink)
+                                # A url line => <a href="urlf?u=url">url</a>
+                                lektieNoLink = re.sub(r'([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'<a href="/urlf?u=\1://\2">\1://\2</a>', lektieNoLink)
+
+                                # Newline
                                 lektieNoLink = re.sub('\n', '<br>\n', lektieNoLink)
                             upd_info = ''
                             if l[3]:

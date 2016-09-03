@@ -283,6 +283,9 @@ if options.sms:
             SMS[s]['days'] = int(cfg.get(sms_grp, 'days'))
             SMS[s]['min_msgs_days'] = int(cfg.get(sms_grp, 'min_msgs_days'))
             SMS[s]['to'] = cfg.get(sms_grp, 'to')
+        except ConfigParser.NoSectionError, e:
+            log(u"Warning: Konfigurationsfilen '%s' mangler gruppen [%s] afsnittet, --sms %s ignoreres." % (CONFIG_FN, sms_grp, sms_grp), 1)
+            del SMS[s]
         except ConfigParser.NoOptionError, e:
             parser.error(u"Konfigurationsfilen '%s' mangler en indstilling for %s i [%s] afsnittet.\nRet direkte i '%s'." % (CONFIG_FN, e.option, sms_grp, CONFIG_FN))
 

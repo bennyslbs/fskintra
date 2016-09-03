@@ -15,15 +15,19 @@ import skoleintra.pgLektieSender
 import skoleintra.schildren
 
 cnames = skoleintra.schildren.skoleGetChildren()
-for cname in cnames:
-    skoleintra.schildren.skoleSelectChild(cname)
 
-    skoleintra.pgContactLists.skoleContactLists()
-    skoleintra.pgFrontpage.skoleFrontpage()
-    skoleintra.pgDialogue.skoleDialogue()
-    skoleintra.pgDocuments.skoleDocuments()
-    skoleintra.pgWeekplans.skoleWeekplans()
+# Normal messages
+if not skoleintra.config.skip_normal:
+    for cname in cnames:
+        skoleintra.schildren.skoleSelectChild(cname)
 
-klAll, lektierAll = skoleintra.pgLektier.getLektieLister()
+        skoleintra.pgContactLists.skoleContactLists()
+        skoleintra.pgFrontpage.skoleFrontpage()
+        skoleintra.pgDialogue.skoleDialogue()
+        skoleintra.pgDocuments.skoleDocuments()
+        skoleintra.pgWeekplans.skoleWeekplans()
 
-skoleintra.pgLektieSender.sendEmailSms(klAll, lektierAll)
+# Lektier
+if not skoleintra.config.skip_lektier:
+    klAll, lektierAll = skoleintra.pgLektier.getLektieLister()
+    skoleintra.pgLektieSender.sendEmailSms(klAll, lektierAll)

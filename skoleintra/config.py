@@ -56,6 +56,14 @@ parser.add_option(
     '--sms', dest='sms', default=None,
     help='Send SMS + Email jfr. konfiguration i [sms-<smsvalue>] sektionen i konfigurationsfilen')
 
+parser.add_option(
+    '--skip-normal', dest='skip_normal', default=False, action='store_true',
+    help='Skip normal messages')
+
+parser.add_option(
+    '--skip-lektier', dest='skip_lektier', default=False, action='store_true',
+    help='Skip lektier (LektieWeb/Mail/SMS)')
+
 (options, args) = parser.parse_args()
 
 if args:
@@ -250,6 +258,10 @@ MSG_DN = os.path.join(ROOT, CACHEPREFIX + 'msg')
 for dn in (CACHE_DN, MSG_DN):
     if not os.path.isdir(dn):
         os.makedirs(dn)
+
+# For control what to do on top level
+skip_normal = options.skip_normal
+skip_lektier = options.skip_lektier
 
 # Get SMSGW
 def getSmsGw(section):

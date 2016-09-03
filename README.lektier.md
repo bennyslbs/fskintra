@@ -80,6 +80,14 @@ Indsæt linier:
     lektieids=[1, 2, 3]
 hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
 
+Desuden kan der indsættes skip-normal=<anything> i [default]
+sektionen, og fskintra's normale brug til alt andet end
+LektieWeb/Mail/SMS er disablet (overruler --skip-normal).  Dette kan
+bruges hvis man ønsker at bruge en separat skoleintra.txt af fskintra kun til lektier.
+
+Tilsvarende kan der indsættes skip-normal=<anything> i [default]
+sektionen, og LektieWeb/Mail/SMS delen er deaktiveret.
+
 Ønskes Email eller SMS med info om lektier, skal der oprettes en sektion som denne
 for hver barn/gruppe der skal have en Email eller SMS.
 

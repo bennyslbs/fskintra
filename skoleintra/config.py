@@ -58,11 +58,11 @@ parser.add_option(
 
 parser.add_option(
     '--skip-normal', dest='skip_normal', default=False, action='store_true',
-    help='Skip normal messages')
+    help='Skip normal messages. If a key skip-normal in config file exists, then normal messages will be skipped, no matter the value here.')
 
 parser.add_option(
     '--skip-lektier', dest='skip_lektier', default=False, action='store_true',
-    help='Skip lektier (LektieWeb/Mail/SMS)')
+    help='Skip lektier (LektieWeb/Mail/SMS). If a key skip-lektier in config file exists, then lektie messages will be skipped, no matter the value here.')
 
 (options, args) = parser.parse_args()
 
@@ -262,6 +262,22 @@ for dn in (CACHE_DN, MSG_DN):
 # For control what to do on top level
 skip_normal = options.skip_normal
 skip_lektier = options.skip_lektier
+
+# If option skip-normal exists in config file, default section, then skip normal messages, no matter the value
+try:
+    cfg.get('default', 'skip-normal')
+    skip_normal = True
+    log(u"Info: skip-normal set since it is included in config file.", 1)
+except ConfigParser.NoOptionError:
+    pass
+
+# If option skip-lektier exists in config file, default section, then skip lektier messages, no matter the value
+try:
+    cfg.get('default', 'skip-lektier')
+    skip_lektier = True
+    log(u"Info: skip-lektier set since it is included in config file.", 1)
+except ConfigParser.NoOptionError:
+    pass
 
 # Get SMSGW
 def getSmsGw(section):

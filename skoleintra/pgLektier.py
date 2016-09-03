@@ -211,7 +211,7 @@ def getLektieLister():
         #f = open('/tmp/a.html', 'r')
         #bs = surllib.beautify(f.read())
 
-        if True:
+        if False:
             fh = open('/tmp/a.html', 'w')
             fh.write(str(bs))
             fh.close()

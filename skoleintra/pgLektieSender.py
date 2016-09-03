@@ -159,6 +159,7 @@ def sendEmailSms(klAll, lektierAll):
             if smstxt != '': # Any message to send
                 for recip in sms_to:
                     try:
+                        config.log(u'SMS to %s: Length: %d(%f): "%s"' % (recip, len(smstxt), len(smstxt)/160.0, smstxt), 2)
                         status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
                         if status != 0:
                             config.log(msg, 0)

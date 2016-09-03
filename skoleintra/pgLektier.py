@@ -163,25 +163,32 @@ def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):
         lektieDay = lektier[i]['day']
         delta = (lektieDay - today).days
         if delta >= 1 and (delta <= days or msgDays < minMsgDays):
-            msgDays += 1
-            # Print date info, differs depending how many days from now
-            if delta == 1:
-                # Tomorrow - no date info
-                pass
-            elif delta < 7:
-                # Within next week: Just a short for the week day
-                res += shortWeekdayString(lektieDay) + ":\n"
-            else:
-                # Afer next week: A short for the week day + How many weeks, e.g. To1
-                res += shortWeekdayString(lektieDay) + str(int(delta/7)) + ":\n"
-
-            # Print lektie
+            # Format content for a day (part after <Day:>), store it in dayContent
+            dayContent = ''
             for fag, lektie in lektier[i]['lektier'].items():
                 if lektie:
                     fagStr = fag + ': '
                     lektieStr = re.sub("<.*?>", "", lektie)
                     lektieStr = lektieStr.replace("\n", "\n" + ''.ljust(len(fagStr)))
-                    res += fagStr + lektieStr + "\n"
+                    dayContent += fagStr + lektieStr + "\n"
+
+            if dayContent: # Content for that day
+                # Lektier for that day
+                msgDays += 1
+
+                # Print date info, differs depending how many days from now
+                if delta == 1:
+                    # Tomorrow - no date info
+                    pass
+                elif delta < 7:
+                    # Within next week: Just a short for the week day
+                    res += shortWeekdayString(lektieDay) + ":\n"
+                else:
+                    # Afer next week: A short for the week day + How many weeks, e.g. To1
+                    res += shortWeekdayString(lektieDay) + str(int(delta/7)) + ":\n"
+
+                # Print lektie
+                res += dayContent
     res = res.rstrip() # Remove trailing \n
     return res
 

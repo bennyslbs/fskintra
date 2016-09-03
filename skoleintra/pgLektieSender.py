@@ -31,7 +31,10 @@ def sendEmailMsg(subj, recip, msg):
         except SMTPException:
             pass  # ok, but we tried...
         server.login(config.SMTPLOGIN, config.SMTPPASS)
-    server.sendmail(config.SENDER, recip, 'Subject: '+subj+'\nReply-To: Benny Simonsen <benny@slbs.dk>\nTo: LektieEmail modtagere\n\n'+msg)
+    reply_to = ''
+    if config.REPLY_TO:
+        reply_to = 'Reply-To: ' + config.REPLY_TO + '\n'
+    server.sendmail(config.SENDER, recip, 'Subject: '+subj+'\n'+reply_to+'To: LektieEmail modtagere\n\n'+msg)
     server.quit()
 
 def sendSmsMsg(sms_grp, sms_cfg, to, msg):

@@ -74,7 +74,8 @@ Opsætning
 Ønskes info om lektier, skal dette opsættes manuelt efter konfiguration som omtalt i [README.md](README.md) er lavet.
 
 I configurationsfilen, ~/.skoleintra/skoleintra.txt:
-Indsæt linier:
+Indsæt linier i [default] sectionen:
+    reply_to=My Name <my@mailadress.dk> (optional)
     # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
     lektiedb=~/.skoleintra/lektier.db
     lektieids=[1, 2, 3]

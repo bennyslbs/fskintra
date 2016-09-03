@@ -231,6 +231,13 @@ def softGet(cp, section, option):
         return ''
 
 try:
+    items = cfg.items('default')
+    # Find reply_to (initially only for LekteMail)
+    REPLY_TO = ''
+    for key, val in items:
+        if key == 'reply_to':
+            REPLY_TO = val
+
     USERNAME = cfg.get('default', 'username')
     PASSWORD = cfg.get('default', 'password')
     HOSTNAME = cfg.get('default', 'hostname')

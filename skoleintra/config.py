@@ -17,9 +17,9 @@ import sys
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
-ROOT = os.path.expanduser('~/.skoleintra/')
+DEFAULT_ROOT = '~/.skoleintra'
 DEFAULT_FN = os.path.join(os.path.dirname(__file__), 'default.inf')
-CONFIG_FN = '~/.skoleintra/skoleintra.txt'
+CONFIG_FN = 'skoleintra.txt' # In ROOT folder
 # Name of current child
 CHILDNAME = ''
 
@@ -32,8 +32,12 @@ Se flg. side for flere detaljer:
    https://github.com/svalgaard/fskintra/''')
 
 parser.add_option(
+    '--root', dest='root', default=DEFAULT_ROOT,
+    help=u'Brug konfigurationsfolderen - standard: %s' % DEFAULT_ROOT,
+    metavar='DIR')
+parser.add_option(
     '--config-file', dest='configfilename', default=None,
-    help=u'Brug konfigurationsfilen FILNAVN - standard: %s' % CONFIG_FN,
+    help=u'Brug konfigurationsfilen DIR/FILNAVN - standard: %s' % CONFIG_FN,
     metavar='FILNAVN')
 parser.add_option(
     '--password', '-p', dest='password', default=None,
@@ -71,9 +75,10 @@ if args:
 
 options.verbosity = max(sum(options.verbosity), 0)
 
-CONFIG_FN = os.path.expanduser(CONFIG_FN)
+ROOT = os.path.expanduser(options.root)
+CONFIG_FN = os.path.expanduser(ROOT + '/' + CONFIG_FN)
 if options.configfilename:
-    TMP = os.path.expanduser(options.configfilename)
+    TMP = os.path.expanduser(ROOT + '/' + options.configfilename)
     if not os.path.samefile(CONFIG_FN, TMP):
         CONFIG_FN = TMP
 if not os.path.isfile(CONFIG_FN) and not options.doconfig:

@@ -116,9 +116,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
 # Send Emails and SMS's with lektier
 def sendEmailSms(klAll, lektierAll):
     for sms_grp, sms_cfg in config.SMS.iteritems():
-        config.log(u'Sender til lektie gruppe ['+sms_grp+']')
-        kl, emailtxt, smstxt = pgLektier.formatLektier(klAll[sms_cfg['id']], lektierAll[sms_cfg['id']], sms_cfg['days'], sms_cfg['min_msgs_days'])
-
+        # Find which to email and SMS to (split to -> email_to + sms_to)
         email_to = []
         sms_to = []
         for recip in sms_cfg['to'].split('\n'):
@@ -136,6 +134,19 @@ def sendEmailSms(klAll, lektierAll):
             else:
                 print "Warning: Ignoring invalid line in SMS(SMS or Email) To:", recip
 
+        # Find lektier for the group
+        if sms_cfg['id'] in klAll and sms_cfg['id'] in lektierAll:
+            config.log(u'Sender til lektie gruppe ['+sms_grp+']')
+            kl, emailtxt, smstxt = pgLektier.formatLektier(klAll[sms_cfg['id']], lektierAll[sms_cfg['id']], sms_cfg['days'], sms_cfg['min_msgs_days'])
+        elif (len(email_to) + len(sms_to)) > 0:
+            config.log(u'Warning: Can\'t send to lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 0)
+            return
+        else:
+            config.log(u'Warning: Can\'t send to empty lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 1)
+            return
+
+        # Seems ok, (klAll, lektierAll contains ID), send Email+SMS
+        # Send emails
         if len(email_to) != 0:
             if emailtxt != '':
                 sendEmailMsg(kl, email_to, emailtxt)
@@ -143,6 +154,7 @@ def sendEmailSms(klAll, lektierAll):
                 config.log(
                     u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
 
+        # Send SMSes
         if len(sms_to) != 0: # Any receivers and a
             if smstxt != '': # Any message to send
                 for recip in sms_to:

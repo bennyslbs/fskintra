@@ -149,7 +149,7 @@ def sendEmailSms(klAll, lektierAll):
         # Send emails
         if len(email_to) != 0:
             if emailtxt != '':
-                sendEmailMsg(kl, email_to, emailtxt)
+                sendEmailMsg('Lektier: %s kl.' % (kl), email_to, emailtxt)
             else:
                 config.log(
                     u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')

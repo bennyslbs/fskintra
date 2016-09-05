@@ -99,6 +99,12 @@ def beautifyFagName(fag):
         return 'Nat'
     elif re.search('Samf', fag, re.IGNORECASE):
         return 'Samf'
+    elif re.search('Tysk', fag, re.IGNORECASE):
+        return 'Tysk'
+    elif re.search('Fysik/Kemi', fag, re.IGNORECASE):
+        return 'Fysik/Kemi'
+    elif re.search('Nat.*Tek', fag, re.IGNORECASE):
+        return 'Nat/Tek'
     else:
         return fag
 

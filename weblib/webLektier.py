@@ -68,6 +68,21 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
         data.append({'delta': delta_days, 'day': day, 'lektie': lektie, 'hit': entries_found_for_day})
     return data
 
+def fixExternalLinks(str, default):
+    fixedLink = default
+    if str:
+        fixedLink = re.sub('://', 'CORRUPURL://', str)
+        fixedLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', fixedLink)
+        # Create a link, fixedLink is the wrong name
+        # A =url line => =urlf?u=url
+        fixedLink = re.sub(r'=([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'/urlf?u=\1://\2>\1://\2', fixedLink)
+        # A url line => <a href="urlf?u=url">url</a>
+        fixedLink = re.sub(r'([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'<a href="/urlf?u=\1://\2">\1://\2</a>', fixedLink)
+
+        # Newline
+        fixedLink = re.sub('\n', '<br>\n', fixedLink)
+    return fixedLink
+
 def main(db, msg=''):
     """All lektie web implementation.
 
@@ -261,25 +276,11 @@ def main(db, msg=''):
                         print '        <li><span class="kl">' + classes[id] + '</span>'
                         print '          <ul>'
                         for l in d['lektie'][id]:
-                            lektieNoLink = '-'
-                            if l[1]:
-                                lektieNoLink = re.sub('://', 'CORRUPURL://', l[1])
-                                lektieNoLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', lektieNoLink)
-                                # Create a link, lektieNoLink is the wrong name
-                                # A =url line => =urlf?u=url
-                                lektieNoLink = re.sub(r'=([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'/urlf?u=\1://\2>\1://\2', lektieNoLink)
-                                # A url line => <a href="urlf?u=url">url</a>
-                                lektieNoLink = re.sub(r'([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'<a href="/urlf?u=\1://\2">\1://\2</a>', lektieNoLink)
-
-                                # Newline
-                                lektieNoLink = re.sub('\n', '<br>\n', lektieNoLink)
-                            upd_info = ''
-                            if l[3]:
-                                upd_info = ', opdateret: '+l[3]
+                            upd_info = ', opdateret: '+l[3] if l[3] else ''
                             if l[0] != '-': # Fag != '-'
-                                print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(l[0], lektieNoLink, l[2], upd_info)
+                                print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[0], '-'), fixExternalLinks(l[1], '-'), l[2], upd_info)
                             else:
-                                print '            <li><span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(lektieNoLink, l[2], upd_info)
+                                print '            <li><span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[1], '-'), l[2], upd_info)
 
                         print '          </ul>'
                         print '        </li>'

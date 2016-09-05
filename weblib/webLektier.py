@@ -10,6 +10,7 @@ import cgi
 import sys
 import re
 import json
+import time
 
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
@@ -147,6 +148,10 @@ def main(db, msg=''):
       font-size: small;
       color: rgb(128,128,128);
     }
+    .fetched {
+      font-size: small;
+      color: rgb(128,128,128);
+    }
     li {
       margin: 0;
       padding: 0.0em;
@@ -254,6 +259,7 @@ def main(db, msg=''):
 
         # Print lektier
         print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'
+        print '    <span class="fetched">Siden er hentet d. {}.</span>'.format(time.strftime("%-d.%-m. kl. %H<sup>%M</sup>"))
         for d in data:
             if d['hit']:
                 dayHeader = d['day'].strftime('%A d. %-d.%-m.').capitalize()

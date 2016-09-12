@@ -20,16 +20,17 @@ def connectDb():
     # Create tables if missing
     sql = 'create table if not exists classes (id integer, class text)'
     c.execute(sql)
-    sql = 'create table if not exists lektier (id integer, day date, fag text, lektie text, created datetime, updated datetime)'
+    sql = 'create table if not exists lektier     (id integer, day date, fag text, lektie text, created datetime, updated datetime)'
     c.execute(sql)
-    #sql = 'create table if not exists attachments (id integer, day date, attachment text, created datetime, updated datetime)'
-    #c.execute(sql)
+    sql = 'create table if not exists notes       (id integer, day date, i integer, data text,  created datetime, updated datetime)'
+    c.execute(sql)
+    sql = 'create table if not exists attachments (id integer, day date, i integer, data text,  created datetime, updated datetime)'
+    c.execute(sql)
 
     return conn, c
 
 def updateLektieDb(id, kl, lektier):
     '''Update lektie DB with new? content'''
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     conn, c = connectDb()
 
     # kl: Set/Update/leave if unchanged
@@ -50,22 +51,42 @@ def updateLektieDb(id, kl, lektier):
     # lektier: Set/Update/leave if unchanged
     for i in xrange(len(lektier) -1, -1, -1): # Rev-range since newest is the first on forældreintra
         day = lektier[i]['day'].strftime("%Y-%m-%d")
+        # Fag:Lektier
         for fag, lektie in lektier[i]['lektier'].items():
-            d = (id, day, fag, )
-            c.execute('SELECT * FROM lektier WHERE id=? and day=? and fag=?', d)
-            r = c.fetchone()
+            insert_or_update_db(conn, c, 'lektier', id, day, 'fag', 'lektie', fag, lektie)
+        # i:Notes & i:Attachments
+        for table in ['notes', 'attachments']:
+            for j in xrange(len(lektier[i][table])):
+                insert_or_update_db(conn, c, table, id, day, 'i', 'data', j, lektier[i][table][j])
 
-            if not r:
-                if lektie:
-                    # Not existing, add it
-                    d = (id, day, fag, lektie, now, )
-                    c.execute('INSERT INTO lektier VALUES (?,?,?,?,?, Null)', d)
-                    conn.commit()
-            elif r[3] != lektie:
-                # Update lektie for given id, day, fag
-                d = (lektie, now, id, day, fag, )
-                c.execute('UPDATE lektier set lektie=?, updated=? where id=? and day=? and fag=?', d)
-                conn.commit()
+def insert_or_update_db(conn, c, dbtable, id, day, key_name, value_name, key, value):
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # There is a problem if a note is removed (last note will remain unchanged, and others will be overwritten) or inserted (only seen/updated timestamps are wrong)
+    # E.g.:
+    # Old:
+    # i=0 val=A
+    # i=1 val=B
+    # New: Line with A is removed
+    # i=0 val=B (updated)
+    # i=1 val=B (untouched)
+    # New: Line with A0 insterted after A
+    # i=0 val=A (untouched)
+    # i=1 val=A1 (updated)
+    # i=2 val=B (new)
+    d = (id, day, key, )
+    c.execute('SELECT * FROM %s WHERE id=? and day=? and %s=?' % (dbtable, key_name), d)
+    r = c.fetchone()
+    if not r:
+        if value:
+            # Not existing, add it
+            d = (id, day, key, value, now, )
+            c.execute('INSERT INTO %s VALUES (?,?,?,?,?, Null)' % (dbtable), d)
+            conn.commit()
+    elif r[3] != value:
+        # Update value for given id, day, key
+        d = (value, now, id, day, key, )
+        c.execute('UPDATE %s set %s=?, updated=? where id=? and day=? and %s=?' % (dbtable, value_name, key_name), d)
+        conn.commit()
 
 if __name__ == '__main__':
     # test reading from DB
@@ -87,27 +108,55 @@ if __name__ == '__main__':
     # Let's set danish locale
     locale.setlocale(locale.LC_ALL, 'da_DK.UTF-8')
 
-    for delta_days in xrange(30):
+    for delta_days in xrange(-100, 100):
         # Day
         day = datetime.date.today() + datetime.timedelta(days=delta_days)
         # Select lektier for day
         entries_found_for_day = False # Any lektier for day?
         lektie = {}
+        notes = {}
+        attachments = {}
         for id in config.LEKTIEIDS:
             d = (id, day,)
+            # Fetch lektier
             c.execute('SELECT fag, lektie, created, updated FROM lektier where id=? and day=?', d)
             lektie[id] = c.fetchall()
             if lektie[id]:
                 entries_found_for_day = True
-
+            # Fetch notes
+            c.execute('SELECT i, data, created, updated FROM notes where id=? and day=?', d)
+            notes[id] = c.fetchall()
+            if notes[id]:
+                entries_found_for_day = True
+            # Fetch attachments (urls)
+            c.execute('SELECT i, data, created, updated FROM attachments where id=? and day=?', d)
+            attachments[id] = c.fetchall()
+            if attachments[id]:
+                entries_found_for_day = True
         # Print
         if entries_found_for_day:
             dayHeader = day.strftime('%A d. %-d.%-m.').capitalize()
             print '** '+dayHeader
             for id in config.LEKTIEIDS:
-                if lektie[id]:
+                if lektie[id] or notes[id] or attachments[id]:
                     print '*** '+classes[id]
+                    if lektie[id]:
+                        print '**** Lektier'
                     for l in lektie[id]:
+                        upd_info = ''
+                        if l[3]:
+                            upd_info = 'opdateret: '+l[3]
+                        print '- {}: {}\n(Set {})'.format(l[0], l[1], l[2], upd_info)
+                    if notes[id]:
+                        print '**** Noter'
+                    for l in notes[id]:
+                        upd_info = ''
+                        if l[3]:
+                            upd_info = 'opdateret: '+l[3]
+                        print '- {}: {}\n(Set {})'.format(l[0], l[1], l[2], upd_info)
+                    if attachments[id]:
+                        print '**** Attachments'
+                    for l in attachments[id]:
                         upd_info = ''
                         if l[3]:
                             upd_info = 'opdateret: '+l[3]

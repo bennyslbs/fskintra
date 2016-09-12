@@ -12,10 +12,14 @@ if len(config.LEKTIEIDS) > 0:
     import pgLektieDB
 
 URL_PREFIX = 'http://%s/Infoweb/Fi/' % config.HOSTNAME
+#For debug, long time back:
+#URL_MAIN = URL_PREFIX + 'Dagbog/VisDagbog.asp?Periode=skoleaar&'
 URL_MAIN = URL_PREFIX + 'Dagbog/VisDagbog.asp?Periode=naestemaaned&'
 
 def wpParseLektier(bs, id):
     '''Get lektier'''
+
+    # Class name is in a h2 somewhere on the page, else giving up finding class name
     try:
         kl = bs.find('h2').string.encode('utf8')
         kl = re.sub(r'^Lektiebog\ ', '', kl)  # Remove initial 'Lektiebog '
@@ -24,58 +28,82 @@ def wpParseLektier(bs, id):
         config.log(u'Warning: Failed to get title for kl for id %d, this indicated getting Lektiebog failed.' % id, 0)
         kl = None
 
-    maint = [t for t in bs.findAll('table')]
+    # Data for each day are located in a <html><body> as <p>'s after each other, Store the <p>'s in daysData
+    # A <p> for a day contains 2 tables:
+    # - First table contains a h4 somewhere in the sub-tree with date info
+    # - Second table contains the data
+    daysData = bs.html.body.findAll('p', recursive=False)
     res = []
-    for i in xrange(len(maint)):
-        if maint[i].find('h4'):
+    for dayData in daysData:
+        tables = dayData.findAll('table', recursive=False)
+        tags = tables[1].findAll(recursive=False)
+
+        match_date = ''
+        if tables[0].find('h4'):
             match_date = re.search(
                 '.*?(?P<weekday>[MTOTFLS][a-z]+dag) den (?P<day>[0-9]{2})-(?P<month>[0-9]{2})-(?P<year>[0-9]{4}):',
-                maint[i].find('h4').string)
-            # Get content in next table
-            fag = {}
-            attachments = maint[i +1].find('menu')
-            if attachments:
-                attachments = attachments.findAll('a')
-            try:
-                for j in xrange(1, len(maint[i +1].find('table').tbody.findAll('tr'))):
-                    entr = maint[i +1].find('table').tbody.findAll('tr')[j].findAll('td')
-                    # Get content
-                    for k in xrange(len(entr)):
-                        entr[k] = entr[k].renderContents().strip()
-                        entr[k] = entr[k].replace("<div>", "").replace("</div>", "") # Remove <div>
-                        entr[k] = entr[k].replace("&amp;", "&") # Replace some html escaping
-                        entr[k] = entr[k].decode("UTF-8").strip()
-                        if entr[k] == '':
-                            entr[k] = None
-                    if len(entr) == 2: # Sometimes entr[1] is mission - seen if table boundraries are missing and no homework for fag.
-                        if entr[0] != None:
-                            fag[beautifyFagName(entr[0])] = entr[1]
-            except:
-                # Just one entry ... or don't try to split it
-                entr = maint[i +1]
-                # Get content
-                entr = entr.renderContents().strip()
-                #entr = entr.replace(' ', '') # Invisible/&nbsp like char
-                entr = re.sub(r'<td.*?>(&nbsp;| | )*</td>', '<td></td>', entr) # Minimize empty/invisible content td's
-                entr = re.sub(r'<tr.*?>(<td.*?>(&nbsp;| )*</td>)*</tr>', '', entr) # Remove empty table rows
-                entr = entr.replace("<div>", "").replace("</div>", "") # Remove <div>
-                entr = entr.replace("&amp;", "&") # Replace some html escaping
-                entr = entr.decode("UTF-8").strip()
-                if entr == '':
-                    entr = None
-                if entr != None:
-                    fag['-'] = entr
-            res.append({
-                'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
-                'weekday' : match_date.group('weekday'),
-                'lektier' : fag,
-                'attachments' : attachments,
-            })
+                tables[0].find('h4').string)
+        # DataTable - Lektier for one day, fag: Lektier in sub<table>, attachments in <menu>:, tables[1]
+        fag = {}
+        notes = []
+        # Find the divs - used for notes in tables[1].tr[1].td[1]
+        divNotes = tables[1].findAll('tr', recursive=False)[1].findAll('td', recursive=False)[1].findAll('div', recursive=False)
+        for n in divNotes:
+            ns = u'%s' % n
+            if ns:
+                ns = re.sub(u'^<div>', '', ns) # Remove initial <div>
+                ns = re.sub(u'</div>$', '', ns) # Remove trailing </div>
+                ns = re.sub(u'^(&nbsp;| | )*', '', ns) # Minimize empty/invisible content in start
+                ns = re.sub(u'(&nbsp;| | )*$', '', ns) # Minimize empty/invisible content in end
 
-            # # To access the attachments:
-            # if attachments:
-            #     for a in attachments:
-            #         print "Dbg:", a['href'], a.string
+            if ns:
+                add_note = True
+                for general_note in config.LEKTIE_GENERAL_NOTES:
+                    if re.search(u'^Husk altid at medbringe spidsede blyanter, viskelæder og lineal <img[^\>]*>$', ns, re.IGNORECASE):
+                        add_note = False
+                if add_note:
+                    notes.append(ns)
+        attachmentsRaw = tables[1].find('menu')
+        attachments = []
+        if attachmentsRaw:
+            # Access attachment: a['href'], a.string
+            attachments.extend([a['href'] for a in attachmentsRaw.findAll('a')])
+        try:
+            for j in xrange(1, len(tables[1].find('table').tbody.findAll('tr'))):
+                entr = tables[1].find('table').tbody.findAll('tr')[j].findAll('td')
+                # Get content
+                for k in xrange(len(entr)):
+                    entr[k] = entr[k].renderContents().strip()
+                    entr[k] = entr[k].replace("<div>", "").replace("</div>", "") # Remove <div>
+                    entr[k] = entr[k].replace("&amp;", "&") # Replace some html escaping
+                    entr[k] = entr[k].decode("UTF-8").strip()
+                    if entr[k] == '':
+                        entr[k] = None
+                if len(entr) == 2: # Sometimes entr[1] is mission - seen if table boundraries are missing and no homework for fag.
+                    if entr[0] != None:
+                        fag[beautifyFagName(entr[0])] = entr[1]
+        except:
+            # Just one entry ... or don't try to split it
+            entr = tables[1]
+            # Get content
+            entr = entr.renderContents().strip()
+            #entr = entr.replace(' ', '') # Invisible/&nbsp like char
+            entr = re.sub(r'<td.*?>(&nbsp;| | )*</td>', '<td></td>', entr) # Minimize empty/invisible content td's
+            entr = re.sub(r'<tr.*?>(<td.*?>(&nbsp;| )*</td>)*</tr>', '', entr) # Remove empty table rows
+            entr = entr.replace("<div>", "").replace("</div>", "") # Remove <div>
+            entr = entr.replace("&amp;", "&") # Replace some html escaping
+            entr = entr.decode("UTF-8").strip()
+            if entr == '':
+                entr = None
+            if entr != None:
+                fag['-'] = entr
+        res.append({
+            'day' : datetime.date(int(match_date.group('year')), int(match_date.group('month')), int(match_date.group('day'))),
+            'weekday' : match_date.group('weekday'),
+            'lektier' : fag,
+            'notes'   : notes,
+            'attachments' : attachments,
+        })
 
     return kl, res
 
@@ -144,7 +172,17 @@ def wpOrgPrintLektier(kl, lektier):
                     lektieStr = re.sub("<\/?(tr|td).*?>", "", lektie)
                 lektieStr = lektieStr.replace("\n", "\n" + ''.ljust(len(fagStr)))
                 res += fagStr + lektieStr + "\n"
-
+        # Notes
+        if lektier[i]['notes']:
+            res += '**** Noter:\n'
+            for data in lektier[i]['notes']:
+                res += '- ' + data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
+        # Attachments
+        if lektier[i]['attachments']:
+            res += '**** Bilag:\n'
+            res += u'Se på forældreintra eller elevintra, filerne er:' + "\n"
+            for data in lektier[i]['attachments']:
+                res += '- ' + data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
     return res.encode('utf8')
 
 def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):
@@ -198,7 +236,7 @@ def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):
     res = res.rstrip() # Remove trailing \n
     return res
 
-def getLektieLister():
+def getLektieLister(ids = config.LEKTIEIDS):
     global bs
 
     if len(config.LEKTIEIDS) == 0:
@@ -207,7 +245,7 @@ def getLektieLister():
 
     klAll = {}
     lektierAll = {}
-    for id in config.LEKTIEIDS:
+    for id in ids:
         # surllib.skoleLogin()
         config.log(u'Kigger efter opdaterede lektier for id %d, og gemmer i lektiedatabasen' % id)
 
@@ -242,4 +280,5 @@ def formatLektier(kl, lektier, sms_days=1, sms_min_msgs_days=0):
         wpFormatSMSLektier(kl, lektier, sms_days, sms_min_msgs_days)
 
 if __name__ == '__main__':
+    getLektieLister([25])
     pass

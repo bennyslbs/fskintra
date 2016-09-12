@@ -11,6 +11,8 @@ import sys
 import re
 import json
 import time
+import os
+import ConfigParser
 
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
@@ -28,6 +30,13 @@ def connectDb(db):
         sys.exit(1)
     return conn, c
 
+# Copy from config.py, but config.py isn't included here
+def softGet(cp, section, option):
+    if cp.has_option(section, option):
+        return cp.get(section, option)
+    else:
+        return ''
+
 def getClasses(dbc):
     dbc.execute('SELECT * FROM classes order by class')
     classes = {}
@@ -35,8 +44,8 @@ def getClasses(dbc):
         classes[id] = kl
     return classes
 
-def getLektier(dbc, lektieIDs, predays = 1, days = 30):
-    """Return list of lektier for the classes with lektieIDs for the comming days
+def getLektierEtc(dbc, lektieIDs, predays = 1, days = 30):
+    """Return list of lektier, notes and attachments for the classes with lektieIDs for the comming days
 
     predays: How many days before tomorrow 0=from tomorrow, 1=from today, 2=from yesterday, ...
     Format:
@@ -44,10 +53,22 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
     For each day there is a dict with:
     - day: Type: datetime.date
     - hit: Entries found for today for any of the IDs Type: boolean
-    - lektier: dict: lektier[id].
+    - lektie: dict: lektie[id].
          lektier[id] is a list with an list for each fag containg:
          - fag-name
          - What to do
+         - When it was seen first time
+         - When it was updated (if no update None)
+    - note: dict: note[id].
+         notes[id] is a list with a note in each element [0, 1, ...] containing:
+         - i (unused, but same formatting as lektie (except i is an integer)
+         - Note
+         - When it was seen first time
+         - When it was updated (if no update None)
+    - attachment: dict: attachment[id].
+         attachment[id] is a list with a attachment in each element [0, 1, ...] containing:
+         - i (unused, but same formatting as lektie (except i is an integer)
+         - Attachment (relative url on server)
          - When it was seen first time
          - When it was updated (if no update None)
     """
@@ -60,13 +81,26 @@ def getLektier(dbc, lektieIDs, predays = 1, days = 30):
         # Select lektier for day
         entries_found_for_day = False # Any lektier for day?
         lektie = {}
+        note = {}
+        attachment = {}
         for id in lektieIDs:
             d = (id, day,)
             dbc.execute('SELECT fag, lektie, created, updated FROM lektier where id=? and day=?', d)
             lektie[id] = dbc.fetchall()
             if lektie[id]:
                 entries_found_for_day = True
-        data.append({'delta': delta_days, 'day': day, 'lektie': lektie, 'hit': entries_found_for_day})
+            dbc.execute('SELECT i, data, created, updated FROM notes where id=? and day=?', d)
+            note[id] = dbc.fetchall()
+            dbc.execute('SELECT i, data, created, updated FROM attachments where id=? and day=?', d)
+            attachment[id] = dbc.fetchall()
+            if lektie[id] or note[id] or attachment[id]:
+                entries_found_for_day = True
+        data.append({'delta': delta_days,
+                     'day': day,
+                     'lektie': lektie,
+                     'note': note,
+                     'attachment': attachment,
+                     'hit': entries_found_for_day})
     return data
 
 def fixExternalLinks(str, default):
@@ -84,12 +118,16 @@ def fixExternalLinks(str, default):
         fixedLink = re.sub('\n', '<br>\n', fixedLink)
     return fixedLink
 
-def main(db, msg=''):
+def main(db, ini_file, msg=''):
     """All lektie web implementation.
 
     To use it either use this file directly or import it from
     ../www/lektier or a copy of that folder to the web-server direcotry structure.
     """
+
+    cfg = ConfigParser.ConfigParser()
+    if os.path.isfile(ini_file):
+        cfg.read(ini_file)
 
     print "Content-type: text/html\n\n"
     print """<!DOCTYPE html>
@@ -143,6 +181,10 @@ def main(db, msg=''):
     .fag {
     }
     .do {
+    }
+    .note {
+    }
+    .attachment {
     }
     .seen {
       font-size: small;
@@ -255,11 +297,13 @@ def main(db, msg=''):
         except:
             days = 30
 
-        data = getLektier(dbc, lektieIDs, predays, days)
+        data = getLektierEtc(dbc, lektieIDs, predays, days)
 
         # Print lektier
         print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'
         print '    <span class="fetched">Siden er hentet d. {}.</span>'.format(time.strftime("%-d.%-m. kl. %H<sup>%M</sup>"))
+        print softGet(cfg, 'www', 'general_notes')
+        print '<p>Lige pt. er det n&oslash;dvendigt at logge ind p&aring; for&aelig;ldre/elevintra for at se bilag - herunder kan du se hvis der er bilag.</p>'
         for d in data:
             if d['hit']:
                 dayHeader = d['day'].strftime('%A d. %-d.%-m.').capitalize()
@@ -278,17 +322,32 @@ def main(db, msg=''):
                 print '    <p><span class="' + dayClass + '">' + dayHeader + '</span>'
                 print '      <ul>'
                 for id in lektieIDs:
-                    if d['lektie'][id]:
+                    if d['lektie'][id] or  d['note'][id] or  d['attachment'][id]:
                         print '        <li><span class="kl">' + classes[id] + '</span>'
-                        print '          <ul>'
-                        for l in d['lektie'][id]:
-                            upd_info = ', opdateret: '+l[3] if l[3] else ''
-                            if l[0] != '-': # Fag != '-'
-                                print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[0], '-'), fixExternalLinks(l[1], '-'), l[2], upd_info)
-                            else:
-                                print '            <li><span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[1], '-'), l[2], upd_info)
+                        if d['lektie'][id]:
+                            print '          <ul>'
+                            for l in d['lektie'][id]:
+                                upd_info = ', opdateret: '+l[3] if l[3] else ''
+                                if l[0] != '-': # Fag != '-'
+                                    print '            <li><span class="fag">{}</span>: <span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[0], '-'), fixExternalLinks(l[1], '-'), l[2], upd_info)
+                                else:
+                                    print '            <li><span class="do">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[1], '-'), l[2], upd_info)
 
-                        print '          </ul>'
+                            print '          </ul>'
+                        if d['note'][id]:
+                            print '          <br>Note%s:' % ('r' if len(d['note'][id]) > 1 else '')
+                            print '          <ul>'
+                            for l in d['note'][id]:
+                                upd_info = ', opdateret: '+l[3] if l[3] else ''
+                                print '            <li><span class="note">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[1], '-'), l[2], upd_info)
+                            print '          </ul>'
+                        if d['attachment'][id]:
+                            print '          <br>Bilag:'
+                            print '          <ul>'
+                            for l in d['attachment'][id]:
+                                upd_info = ', opdateret: '+l[3] if l[3] else ''
+                                print '            <li><span class="attachment">{}</span> <span class="seen">(Set {}{})</span></li>'.format(fixExternalLinks(l[1], '-'), l[2], upd_info)
+                            print '          </ul>'
                         print '        </li>'
                 print '      </ul>'
                 print '    </p>'
@@ -304,4 +363,4 @@ if __name__ == '__main__':
         sys.path.insert(0, cmd_folder)
 
     import skoleintra.config
-    main(skoleintra.config.LEKTIEDB, '')
+    main(skoleintra.config.LEKTIEDB, skoleintra.config.CONFIG_FN, '')

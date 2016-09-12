@@ -258,6 +258,14 @@ try:
         LEKTIEIDS = json.loads(LEKTIEIDS)
     else:
         LEKTIEIDS = []
+    LEKTIE_GENERAL_NOTES = softGet(cfg, 'default', 'lektie_general_notes')
+    try:
+        LEKTIE_GENERAL_NOTES = LEKTIE_GENERAL_NOTES.split('\n')
+        LEKTIE_GENERAL_NOTES = filter(None, LEKTIE_GENERAL_NOTES) # Remove empty elements (empty lines)
+        regex = re.compile('^#')
+        LEKTIE_GENERAL_NOTES = [_ for _ in LEKTIE_GENERAL_NOTES if not regex.match(_)]
+    except:
+        LEKTIE_GENERAL_NOTES = []
 
 except ConfigParser.NoOptionError, e:
     parser.error(u'''Konfigurationsfilen '%s' mangler en indstilling for %s.

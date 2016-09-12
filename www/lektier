@@ -15,6 +15,7 @@ import cgi
 # Location of sqlite3 database
 FILE = os.path.splitext(__file__)[0]
 DB = FILE + '.db'  # Create a symlink to the real lektier.db in the same dir as this file (for webusage), __file__ is the name of the symlink of lektier (typically located in the webserver)
+INI_FILE = __file__ + '.ini'
 
 FSK_INTRA_LOC = os.path.dirname(os.path.realpath(__file__)) + '/..'
 # FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE must match location of file, update FSK_INTRA_LOC to root of fskintra
@@ -39,7 +40,11 @@ if ('debug' in arguments) and (arguments['debug'].value == '1'):
 sys.path.append(FSK_INTRA_LOC + WEBLIB)
 if enable_debug:
     import webLektier_debug
-    webLektier_debug.main(DB, '<h2><font color="red">Debug version</font></h2>Pleace use the normal <a href="%s">LektieWeb</a> instead without debug=1' % __file__)
+    webLektier_debug.main(
+        DB, INI_FILE,
+        '<h2><font color="red">Debug version</font></h2>Pleace use the normal <a href="%s">LektieWeb</a> instead without debug=1' % __file__)
 else:
     import webLektier
-    webLektier.main(DB, '')
+    webLektier.main(
+        DB, INI_FILE,
+        '')

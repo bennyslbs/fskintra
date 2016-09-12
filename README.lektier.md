@@ -78,6 +78,13 @@ Indsæt linier i [default] sectionen:
     reply_to=My Name <my@mailadress.dk> (optional)
     # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
     lektiedb=~/.skoleintra/lektier.db
+    # Skip general notes when reading lektier (only the notes not text for a fag)
+    # One note to skip on each line - regular expressions, start+end with ^$ to match complete line
+    # Lines must be indented to be part of lektie_general_notes
+    # Lines with # as first non-whitespace char is comments
+    lektie_general_notes =
+		     # Skip notes with the folloging text and a image (typically a smily)
+    		     ^Husk altid at medbringe spidsede blyanter, viskelæder og lineal <img[^\>]*>$
     lektieids=[1, 2, 3]
 hvor tallene er ID=<num> for din(e) barn/børn i url'en for Lektier.
 
@@ -235,6 +242,23 @@ samme sted og have samme navn som symlinket til python scriptet
 lekter, dog tilføjet endelsen .db. Hvis python-script linket hedder
 /var/www/cgi-bin/lektier.py, skal lektier.db linket hedde
 /var/www/cgi-bin/lektier.py.db.
+
+Der kan laves en ini-fil til LektieWeb. Den skal ligge
+samme sted og have samme navn som symlinket til python scriptet
+lekter, dog tilføjet endelsen .ini. Hvis python-script linket hedder
+/var/www/cgi-bin/lektier.py, skal lektier.db linket hedde
+/var/www/cgi-bin/lektier.py.ini.
+
+Flg. bliver brugt fra ini-filen, hvis det ekisteter: general_notes fra [www].
+Indholdet fra general_notes bliver tilføjet website øverst på siden,
+det skal være formateret html kode.
+
+Eksempel på indholdet af ini-filen:
+    # Configuration file for lektier
+    
+    [www]
+    general_notes = <p>Husk altid at medbringe spidsede blyanter, viskelæder og lineal <img alt="smiley" src="/fskintra/pict/face.png" title="smiley" height="23" width="23"></p>
+    # Configuration file for lektier
 
 I roden af webserveren bør der ligeledes laves et symlink til eller
 kopi af www/root/fskintra. Der ligger favicons mm. fra

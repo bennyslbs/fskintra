@@ -59,7 +59,7 @@ def wpParseLektier(bs, id):
             if ns:
                 add_note = True
                 for general_note in config.LEKTIE_GENERAL_NOTES:
-                    if re.search(u'^Husk altid at medbringe spidsede blyanter, viskelæder og lineal <img[^\>]*>$', ns, re.IGNORECASE):
+                    if re.search(general_note, ns, re.IGNORECASE):
                         add_note = False
                 if add_note:
                     notes.append(ns)

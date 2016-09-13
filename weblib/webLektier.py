@@ -110,9 +110,11 @@ def fixExternalLinks(str, default):
         fixedLink = re.sub('src="httpCORRUPURL://www.[a-z]+.[a-z]+/[Cc]keditor[0-9]+/plugins/smiley/images/[a-z_\-0-9]+.gif"', 'src="/fskintra/pict/face.png"', fixedLink)
         # Create a link, fixedLink is the wrong name
         # A =url line => =urlf?u=url
-        fixedLink = re.sub(r'=([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'/urlf?u=\1://\2>\1://\2', fixedLink)
+        fixedLink = re.sub(r'=([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&\#]+)', r'/urlf?u=\1://\2>\1://\2', fixedLink)
         # A url line => <a href="urlf?u=url">url</a>
-        fixedLink = re.sub(r'([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&]+)', r'<a href="/urlf?u=\1://\2">\1://\2</a>', fixedLink)
+        fixedLink = re.sub(r'([a-zA-Z]+)CORRUPURL://([a-zA-Z0-9\.\_\-\/\?\=\&\#]+)', r'<a href="/urlf?u=\1://\2">\1://\2</a>', fixedLink)
+        # A url line => <a href="urlf?u=url">url</a>
+        fixedLink = re.sub(r'([\s])([a-zA-Z0-9\.\-æøå]+\.(dk|com|nu|org)[a-zA-Z0-9\.\_\-\/\?\=\&\#]+)', r'\1<a href="/urlf?u=http://\2">\2</a>', fixedLink)
 
         # Newline
         fixedLink = re.sub('\n', '<br>\n', fixedLink)

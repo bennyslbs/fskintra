@@ -1,8 +1,5 @@
-#! /usr/bin/env python
-
-#
-# -*- encoding: utf-8 -*-
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sqlite3
 import datetime
@@ -14,6 +11,7 @@ import time
 import os
 import ConfigParser
 
+# For non-ascii chars in DB
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
@@ -210,17 +208,17 @@ def main(db, ini_file, msg=''):
 
     arguments = cgi.FieldStorage()
     if not arguments or (('kl' in arguments) and (arguments['kl'].value == 'all')):
-        print """    <h1>Ops&aelig;tning</h1>
+        print """    <h1>Opsætning</h1>
     <p>
-      Ops&aelig;tning af web lektie overblik.
+      Opsætning af web lektie overblik.
       <br>
-      V&aelig;lg hvilke klasser du &oslash;nsker at se lektier for, og hvor mange dage frem.
-      Tryk p&aring; OK.
+      Vælg hvilke klasser du ønsker at se lektier for, og hvor mange dage frem.
+      Tryk på OK.
     </p>
     <p>
       Du kan bookmarke den side som du kommer til, og du vil fremover se lektier for de valgte klasser for det valgte antal dage.
       <br>
-      Du kan ogs&aring; gemme den p&aring; startsk&aelig;rmen af en smartphone (som en app), hvis du i browserens menu v&aelig;lger "F&oslash;j til startsk&aelig;rm" eller lignende.
+      Du kan også gemme den på startskærmen af en smartphone (som en app), hvis du i browserens menu vælger "Føj til startskærm" eller lignende.
     </p>
 """
 
@@ -261,7 +259,7 @@ def main(db, ini_file, msg=''):
             print '<p>'
             print 'Nedenfor ses eksempel med alle klasser hvor LektieWeb er aktiv for.'
             print '<br>'
-            print 'Dette er kun til demonstration, og er <strong>meget</strong> langsommere end n&aring;r de &oslash;nskede klasser er valgt.'
+            print 'Dette er kun til demonstration, og er <strong>meget</strong> langsommere end når de ønskede klasser er valgt.'
             print '</p>'
             print '<hr>'
     if arguments:  # Arguments given, show data

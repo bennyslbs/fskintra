@@ -1,6 +1,5 @@
-#
-# -*- encoding: utf-8 -*-
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import config
 import surllib
@@ -25,7 +24,7 @@ def wpParseLektier(bs, id):
         kl = re.sub(r'^Lektiebog\ ', '', kl)  # Remove initial 'Lektiebog '
         kl = re.sub(r'\ ?kl(\.|asse)?', '', kl)  # Remove kl/kl./klasse at the end
     except:
-        config.log(u'Warning: Failed to get title for kl for id %d, this indicated getting Lektiebog failed.' % id, 0)
+        config.log('Warning: Failed to get title for kl for id %d, this indicated getting Lektiebog failed.' % id, 0)
         kl = None
 
     # Data for each day are located in a <html><body> as <p>'s after each other, Store the <p>'s in daysData
@@ -49,12 +48,12 @@ def wpParseLektier(bs, id):
         # Find the divs - used for notes in tables[1].tr[1].td[1]
         divNotes = tables[1].findAll('tr', recursive=False)[1].findAll('td', recursive=False)[1].findAll('div', recursive=False)
         for n in divNotes:
-            ns = u'%s' % n
+            ns = '%s' % n
             if ns:
-                ns = re.sub(u'^<div>', '', ns) # Remove initial <div>
-                ns = re.sub(u'</div>$', '', ns) # Remove trailing </div>
-                ns = re.sub(u'^(&nbsp;| | )*', '', ns) # Minimize empty/invisible content in start
-                ns = re.sub(u'(&nbsp;| | )*$', '', ns) # Minimize empty/invisible content in end
+                ns = re.sub('^<div>', '', ns) # Remove initial <div>
+                ns = re.sub('</div>$', '', ns) # Remove trailing </div>
+                ns = re.sub('^(&nbsp;| | )*', '', ns) # Minimize empty/invisible content in start
+                ns = re.sub('(&nbsp;| | )*$', '', ns) # Minimize empty/invisible content in end
 
             if ns:
                 add_note = True
@@ -139,21 +138,21 @@ def beautifyFagName(fag):
 def shortWeekdayString(date):
     weekday = date.isoweekday()
     if weekday == 1:
-        return u'M'
+        return 'M'
     if weekday == 2:
-        return u'Ti'
+        return 'Ti'
     if weekday == 3:
-        return u'O'
+        return 'O'
     if weekday == 4:
-        return u'To'
+        return 'To'
     if weekday == 5:
-        return u'F'
+        return 'F'
     if weekday == 6:
-        return u'L'
+        return 'L'
     if weekday == 7:
-        return u'S'
+        return 'S'
     else:
-        return u'?'
+        return '?'
 
 def wpOrgPrintLektier(kl, lektier):
     res = ''
@@ -176,11 +175,11 @@ def wpOrgPrintLektier(kl, lektier):
         if lektier[i]['notes']:
             res += '**** Noter:\n'
             for data in lektier[i]['notes']:
-                res += '- ' + data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
+                res += '- %s\n' % data
         # Attachments
         if lektier[i]['attachments']:
             res += '**** Bilag:\n'
-            res += u'Se på forældreintra eller elevintra, filerne er:' + "\n"
+            res += 'Se på forældreintra eller elevintra, filerne er:' + "\n"
             for data in lektier[i]['attachments']:
                 res += '- ' + data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
     return res.encode('utf8')
@@ -240,14 +239,14 @@ def getLektieLister(ids = config.LEKTIEIDS):
     global bs
 
     if len(config.LEKTIEIDS) == 0:
-        config.log(u'Info: For at hente lektier: Adder linie i config filen: "lektieids=[1, 2, 3]"')
-        config.log(u'Info- hvor tallene er ID=<num> for din(e) barn/børn i url\'en for Lektier')
+        config.log('Info: For at hente lektier: Adder linie i config filen: "lektieids=[1, 2, 3]"')
+        config.log('Info- hvor tallene er ID=<num> for din(e) barn/børn i url\'en for Lektier')
 
     klAll = {}
     lektierAll = {}
     for id in ids:
         # surllib.skoleLogin()
-        config.log(u'Kigger efter opdaterede lektier for id %d, og gemmer i lektiedatabasen' % id)
+        config.log('Kigger efter opdaterede lektier for id %d, og gemmer i lektiedatabasen' % id)
 
         # read the initial page
         url = URL_MAIN + "ID=%d" % id
@@ -263,9 +262,9 @@ def getLektieLister(ids = config.LEKTIEIDS):
             kl, lektier = wpParseLektier(bs, id)
         except:
             kl = None
-            config.log(u'Error parsing lektier for kl.', 0)
+            config.log('Error parsing lektier for kl.', 0)
         if not kl:
-            config.log(u'''Error: Class name couldn\'t be read from title at url: '%s'.''' % (url))
+            config.log('''Error: Class name couldn\'t be read from title at url: '%s'.''' % (url))
         # Fill content into DB
         if kl: # If kl = None it is an illegal ID (no header, so propably illegal ID)
             pgLektieDB.updateLektieDb(id, kl, lektier)

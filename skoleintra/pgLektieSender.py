@@ -1,6 +1,4 @@
-#
-# -*- encoding: utf-8 -*-
-#
+# -*- coding: utf-8 -*-
 
 import config
 import pgLektier
@@ -16,7 +14,7 @@ import smsgw
 
 def sendEmailMsg(subj, recip, msg):
     '''Copy + slighlty modified from semail send()'''
-    config.log(u'Sender email for %s to %s' %
+    config.log('Sender email for %s to %s' %
                (subj, recip))
 
     # open smtp connection
@@ -63,7 +61,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
             msg = json.dumps(resp)
         return code, msg
     elif sms_cfg['smsgw']['gw'] == 'NoSMSGW':
-        return 0, u'Info: SMS not sent to %s since NoSMSGW is used for \'%s\'' % (to, 'sms-'+sms_grp)
+        return 0, 'Info: SMS not sent to %s since NoSMSGW is used for \'%s\'' % (to, 'sms-'+sms_grp)
     elif sms_cfg['smsgw']['gw'] == 'smsit.dk':
         url = 'http://www.smsit.dk/api/sendSms.php'
         params = urllib.urlencode({
@@ -76,7 +74,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         try:
             f = urllib.urlopen(url, params)
         except:
-            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
+            return -1, 'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
         statusStr = f.read()
         status = int(statusStr)
     elif sms_cfg['smsgw']['gw'] == 'eu.apksoft.android.smsgateway':
@@ -90,7 +88,7 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         try:
             f = urllib.urlopen(url + '?' + params)
         except:
-            return -1, u'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
+            return -1, 'Error: Can\'t connect to SMS Gateway for \'%s\'' % ('sms-'+sms_grp)
         statusStr = f.read()
 
         statusStr = statusStr.replace('\n', '')
@@ -108,13 +106,13 @@ def sendSmsMsg(sms_grp, sms_cfg, to, msg):
         else:
             status = 28
     else:
-        retrun -1, u'Error: Ukendt/ej implementeret SMS_GW: "'+ sms_cfg['smsgw]']['gw'] + '". Implementer det i sendSmsMsg i pgLektieSender.py'
+        retrun -1, 'Error: Ukendt/ej implementeret SMS_GW: "'+ sms_cfg['smsgw]']['gw'] + '". Implementer det i sendSmsMsg i pgLektieSender.py'
 
     # Return SMS status, 0 ok, !=0 maybe error, something went wrong
     tried_to_send_str = ''
     if status != 0:
         tried_to_send_str = 'forsøgt '
-    return status, u'SMS ' + tried_to_send_str + 'sendt til [%s]: %s med status %d (%s).' % ('sms-'+sms_grp, to, status, statusStr)
+    return status, 'SMS ' + tried_to_send_str + 'sendt til [%s]: %s med status %d (%s).' % ('sms-'+sms_grp, to, status, statusStr)
 
 # Send Emails and SMS's with lektier
 def sendEmailSms(klAll, lektierAll):
@@ -139,13 +137,13 @@ def sendEmailSms(klAll, lektierAll):
 
         # Find lektier for the group
         if sms_cfg['id'] in klAll and sms_cfg['id'] in lektierAll:
-            config.log(u'Sender til lektie gruppe ['+sms_grp+']')
+            config.log('Sender til lektie gruppe ['+sms_grp+']')
             kl, emailtxt, smstxt = pgLektier.formatLektier(klAll[sms_cfg['id']], lektierAll[sms_cfg['id']], sms_cfg['days'], sms_cfg['min_msgs_days'])
         elif (len(email_to) + len(sms_to)) > 0:
-            config.log(u'Warning: Can\'t send to lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 0)
+            config.log('Warning: Can\'t send to lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 0)
             return
         else:
-            config.log(u'Warning: Can\'t send to empty lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 1)
+            config.log('Warning: Can\'t send to empty lektie group [%s], since lektier for ID %d havn\'t been fetched' % (sms_grp, sms_cfg['id']), 1)
             return
 
         # Seems ok, (klAll, lektierAll contains ID), send Email+SMS
@@ -155,14 +153,14 @@ def sendEmailSms(klAll, lektierAll):
                 sendEmailMsg('Lektier: %s' % (kl), email_to, emailtxt)
             else:
                 config.log(
-                    u'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
+                    'Info: Ingen Email sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
 
         # Send SMSes
         if len(sms_to) != 0: # Any receivers and a
             if smstxt != '': # Any message to send
                 for recip in sms_to:
                     try:
-                        config.log(u'SMS to %s: Length: %d(%f): "%s"' % (recip, len(smstxt), len(smstxt)/160.0, smstxt), 2)
+                        config.log('SMS to %s: Length: %d(%f): "%s"' % (recip, len(smstxt), len(smstxt)/160.0, smstxt), 2)
                         status, msg = sendSmsMsg(sms_grp, sms_cfg, recip, smstxt)
                         if status != 0:
                             config.log(msg, 0)
@@ -172,4 +170,4 @@ def sendEmailSms(klAll, lektierAll):
                         config.log('Failed to send sms to [%s]: %s' % (sms_grp, recip))
             else:
                 config.log(
-                    u'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')
+                    'Info: Ingen SMS sendt pga. listen af \'relevante\' lektier er tom for lektie gruppe ['+sms_grp+']')

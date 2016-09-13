@@ -1,8 +1,5 @@
-#! /usr/bin/env python
-
-#
-# -*- encoding: utf-8 -*-
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Create a symlink of this file in web server cgi-bin.
 # - If not a symlink change FSK_INTRA_LOC to point to FSK_INTRA root dir
@@ -11,6 +8,7 @@
 
 import os
 import cgi
+import sys
 
 # Location of sqlite3 database
 FILE = os.path.splitext(__file__)[0]
@@ -22,8 +20,6 @@ FSK_INTRA_LOC = os.path.dirname(os.path.realpath(__file__)) + '/..'
 WEBLIB = '/weblib'  # Don't change
 WEBLEKTIER_FILE = '/webLektier.py'  # Don't change
 
-import sys
-import os.path
 if FSK_INTRA_LOC == '.':
     pass
 elif not os.path.isfile(FSK_INTRA_LOC + WEBLIB + WEBLEKTIER_FILE):

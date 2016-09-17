@@ -72,18 +72,28 @@ def insert_or_update_db(conn, c, dbtable, id, day, key_name, value_name, key, va
     # i=0 val=A (untouched)
     # i=1 val=A1 (updated)
     # i=2 val=B (new)
-    d = (id, day, key, )
+    d = (
+        id,
+        day,
+        u'%s' % key, # u'' is needed if key is UTF-8
+    )
     c.execute('SELECT * FROM %s WHERE id=? and day=? and %s=?' % (dbtable, key_name), d)
     r = c.fetchone()
     if not r:
         if value:
             # Not existing, add it
-            d = (id, day, key, value, now, )
+            d = (id, day, u'%s' % key, u'%s' % value, now, )
             c.execute('INSERT INTO %s VALUES (?,?,?,?,?, Null)' % (dbtable), d)
             conn.commit()
     elif r[3] != value:
         # Update value for given id, day, key
-        d = (value, now, id, day, key, )
+        d = (
+            u'%s' % value, # u'' is needed if key is UTF-8
+            now,
+            id,
+            day,
+            u'%s' % key, # u'' is needed if key is UTF-8
+        )
         c.execute('UPDATE %s set %s=?, updated=? where id=? and day=? and %s=?' % (dbtable, value_name, key_name), d)
         conn.commit()
 

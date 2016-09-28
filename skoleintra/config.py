@@ -251,6 +251,10 @@ try:
     SMTPLOGIN = softGet(cfg, 'default', 'smtplogin')
     SMTPPASS = softGet(cfg, 'default', 'smtppassword')
     LEKTIEDB = os.path.expanduser(softGet(cfg, 'default', 'lektiedb'))
+    LEKTIEDB_ATTACHMENT_ROOT = os.path.expanduser(softGet(cfg, 'default', 'lektiedb_attachment_root'))
+    if LEKTIEDB_ATTACHMENT_ROOT == 'None':
+        LEKTIEDB_ATTACHMENT_ROOT = None
+    LEKTIEDB_ATTACHMENT_EXT =  os.path.expanduser(softGet(cfg, 'default', 'lektiedb_attachment_ext'))
     LEKTIEIDS = softGet(cfg, 'default', 'lektieids')
     if re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', LEKTIEIDS):
         # Shall be on list form [num, num, num]

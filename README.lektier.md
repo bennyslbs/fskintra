@@ -78,6 +78,15 @@ Indsæt linier i [default] sectionen:
     reply_to=My Name <my@mailadress.dk> (optional)
     # Sti til sqlite3 database (filen laves automatisk af fskintra.py)
     lektiedb=~/.skoleintra/lektier.db
+
+    # Attachments til lektier: lektiedb_attachment_root
+    # Hvis lektiedb_attachment_root=None => Disablet hentning af attachments til lektie-delen
+    lektiedb_attachment_root=~/.skoleintra/lektier.db.attachments
+    #lektiedb_attachment_root=None
+    # Hvis lektiedb_attachment_ext=None => Disablet hentning af attachments til lektie-delen
+    lektiedb_attachment_ext=pdf|odt|ott|odm|ods|odg|otg|odp|otp|odf|docx?|xlsx?
+    #lektiedb_attachment_ext=None
+
     # Skip general notes when reading lektier (only the notes not text for a fag)
     # One note to skip on each line - regular expressions, start+end with ^$ to match complete line
     # Lines must be indented to be part of lektie_general_notes
@@ -277,15 +286,26 @@ Ekstra opsætning i <site>.conf apache konfigurationsfilen, som antager:
   - `/home/<fskuser>/git/github.com/bennyslbs/fskintra` er roden af git-repositoriet, husk det skal være branchen `lektier`.
 
 ```
-        ScriptAlias /<uniq string where LektieWeb is located>/somewhere/outside/apache/webpages/
+        # <uniq string where LektieWeb is located> must be the same for both the Alias and ScriptAlias
+        Alias       /<uniq string where LektieWeb is located>/attachments /home/<USER>/.skoleintra/lektier.db.attachments
+        ScriptAlias /<uniq string where LektieWeb is located>             /somewhere/outside/apache/webpages/
         # /urlf points to urlf in the hidden dir, but is not hidden;
         # Purpose: used to fetch a url from the hidden url via unhidden url
         ScriptAlias /urlf /somewhere/outside/apache/webpages/urlf
-        <Directory /var/www/fskintra.slbs.dk-cgi.hidden>
-            Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-            Order allow,deny
-            Allow from all
-            SetHandler cgi-script
+        <Directory /home/<USER>/.skoleintra/lektier.db.attachments>
+            #SetHandler none
+            SetHandler default-handler
+            Options None
+            # Important for security, prevents someone from making secuity issues via .htaccess
+            AllowOverride None
+
+            RemoveHandler .cgi .pl .py .php4 .pcgi4 .php .php3 .phtml .pcgi .php5 .pcgi5 .pyc .pyo
+            RemoveType    .cgi .pl .py .php4 .pcgi4 .php .php3 .phtml .pcgi .php5 .pcgi5 .pyc .pyo
+
+            php_flag engine off
+
+            # Give access to all
+            Require all granted
         </Directory>
 ```
 

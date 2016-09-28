@@ -7,6 +7,7 @@ import semail
 import urllib
 import re
 import datetime
+import os
 if len(config.LEKTIEIDS) > 0:
     import pgLektieDB
 
@@ -66,7 +67,62 @@ def wpParseLektier(bs, id):
         attachments = []
         if attachmentsRaw:
             # Access attachment: a['href'], a.string
-            attachments.extend([a['href'] for a in attachmentsRaw.findAll('a')])
+            atturls = [a['href'] for a in attachmentsRaw.findAll('a')]
+            for url in atturls:
+                if (
+                        config.LEKTIEDB_ATTACHMENT_ROOT # storing attachments saved (LEKTIEDB_ATTACHMENT_ROOT defined)
+                        and
+                        (url.startswith('/') or config.HOSTNAME in url) # Onsite
+                        and
+                        config.LEKTIEDB_ATTACHMENT_EXT # Name match defined
+                        and
+                        re.match('.*[a-zA-Z0-9]\.(' + config.LEKTIEDB_ATTACHMENT_EXT + ')$', url) # url extension matches LEKTIEDB_ATTACHMENT_EXT
+                ):
+                    # Where should the attachment be saved for LektieWeb
+                    fileRelPath = '' # '/' is appended below (part of url)
+                    if url.startswith('/'):
+                        fileRelPath += url
+                    elif url.startswith(config.HOSTNAME):
+                        fileRelPath += re.sub(r'^.*' + config.HOSTNAME, '', url) # Skip initial httpX://HOSTNAME
+                    else:
+                        config.log(u'Lektier:ID=%d: Kan ikke fjerne url til efter hostname for flg. URL: %s' %
+                                   (id,
+                                    url))
+                    fileRelPath = fileRelPath.encode("UTF-8")
+                    fileAbsPath = config.LEKTIEDB_ATTACHMENT_ROOT + fileRelPath
+                    fileAbsDir = os.path.dirname(fileAbsPath)
+                    urlRelLink = '<a href="attachments'+ fileRelPath +'">' + os.path.basename(url) + '</a>'
+
+                    if os.path.exists(fileAbsPath):
+                        # The attachment have been downloaded, just mention it so we know it still is attached
+                        attachments.append(urlRelLink)
+                    else:
+                        # If the attachment does not exist, try to download it
+                        data = None
+                        try:
+                            data = surllib.skoleGetURL(url, False)
+                        except:
+                            # unable to fetch URL
+                            config.log(u'Lektier:ID=%d: Kan ikke hente flg. URL: %s' %
+                                       (id,
+                                        url))
+                        if data:
+                            try:
+                                if not os.path.exists(fileAbsDir):
+                                    os.makedirs(fileAbsDir)
+                                f = open(fileAbsPath,'w')
+                                f.write(data)
+                                f.close()
+                                attachments.append(urlRelLink)
+                            except:
+                                config.log(u'Lektier:ID=%d: Kan ikke gemme attachment: %s' %
+                                           (id,
+                                            fileRelPath))
+                                attachments.append(url)
+                        else:
+                            attachments.append(url)
+                else: # Off-site attachment
+                    attachments.append(url)
         try:
             for j in xrange(1, len(tables[1].find('table').tbody.findAll('tr'))):
                 entr = tables[1].find('table').tbody.findAll('tr')[j].findAll('td')
@@ -181,7 +237,10 @@ def wpOrgPrintLektier(kl, lektier):
             res += '**** Bilag:\n'
             res += 'Se på forældreintra eller elevintra, filerne er:' + "\n"
             for data in lektier[i]['attachments']:
-                res += '- ' + data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
+                udata = data + "\n" if isinstance(data, unicode) else data.string.encode('utf8') + "\n"
+                # Skip <a href.. >, only leave text (filename)
+                udata = re.sub(r'^<a href="attachments[^>]*>','', re.sub(r'</a>$','', udata))
+                res += '- ' + udata
     return res.encode('utf8')
 
 def wpFormatSMSLektier(kl, lektier, days, minMsgDays = 0):

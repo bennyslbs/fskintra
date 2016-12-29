@@ -321,7 +321,7 @@ def getLektieLister(ids = config.LEKTIEIDS):
             kl, lektier = wpParseLektier(bs, id)
         except:
             kl = None
-            config.log('Error parsing lektier for kl.', 0)
+            config.log('''Error parsing lektier for kl. at url: '%s'.''' % (url), 0)
         if not kl:
             config.log('''Error: Class name couldn\'t be read from title at url: '%s'.''' % (url))
         # Fill content into DB

@@ -32,6 +32,9 @@ def wpParseLektier(bs, id):
     # A <p> for a day contains 2 tables:
     # - First table contains a h4 somewhere in the sub-tree with date info
     # - Second table contains the data
+    # Skip parsing if found text saying there are no homework
+    if re.findall('Der\ er\ ingen\ dagbogsblade\ for\ den\ valgte\ periode.', '%s' % bs.html.body, re.MULTILINE):
+        return kl, []
     daysData = bs.html.body.findAll('p', recursive=False)
     res = []
     for dayData in daysData:

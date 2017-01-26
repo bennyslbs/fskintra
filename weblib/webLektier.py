@@ -10,6 +10,7 @@ import json
 import time
 import os
 import ConfigParser
+import urllib
 
 # For non-ascii chars in DB
 reload(sys)  # Reload does the trick!
@@ -190,6 +191,9 @@ def main(db, ini_file, msg=''):
       font-size: small;
       color: rgb(128,128,128);
     }
+    .infopage {
+      font-size: small;
+    }
     .fetched {
       font-size: small;
       color: rgb(128,128,128);
@@ -207,7 +211,34 @@ def main(db, ini_file, msg=''):
     dbconn, dbc = connectDb(db)
 
     arguments = cgi.FieldStorage()
-    if not arguments or (('kl' in arguments) and (arguments['kl'].value == 'all')):
+    args = {}
+    for arg in arguments:
+        args[arg] = arguments[arg].value
+    del arguments
+
+    debug = False
+    if 'debug' in args:
+        if args['debug'] == '1':
+            debug = True
+        del args['debug']
+
+    # Sanitize predays
+    try:
+        predays = int(args['predays'])
+    except:
+        predays = 1
+
+    # Sanitize days
+    try:
+        days = int(args['days'])
+    except:
+        days = 30
+
+
+    show_conf = len(args) == 0 or 'conf' in args or (('kl' in args) and (args['kl'] == 'all'))
+    show_data = 'conf' not in args and ((('kl' in args) and (args['kl'] == 'all')) or 'kl1' in args)
+
+    if show_conf:
         print """    <h1>Opsætning</h1>
     <p>
       Opsætning af web lektie overblik.
@@ -229,14 +260,17 @@ def main(db, ini_file, msg=''):
             dbc.execute('SELECT * FROM classes order by class')
             classes = {}
             for id, kl in dbc.fetchall():
-                print '<option value="%s">%s</option>' % (id, kl)
+                opt_selected = ''
+                if 'kl%s' % i in args and args['kl%s' % i] == '%s' % id:
+                    opt_selected = 'selected'
+                print '<option %s value="%s">%s</option>' % (opt_selected, id, kl)
             print '</select><br>'
         print '</p>'
         print '<p>'
         print 'Antal dage bagud: <select class=\"button\" name=predays>'
         for i in range(0,8):
             print '<option',
-            if i == 1:  # Selected
+            if i == predays:  # Selected
                 print ' selected',
             print ' value="%d">%d</option>' % (i, i)
         print '</select> (0=Fra i morgen, 1 fra i dag, ...)<br>'
@@ -245,15 +279,45 @@ def main(db, ini_file, msg=''):
         print 'Antal dage fremad:<select class=\"button\" name=days>'
         for i in range(1,30+1):
             print '<option',
-            if i == 30:  # Selected
+            if i == days:  # Selected
                 print ' selected',
             print ' value="%d">%d</option>' % (i, i)
         print "</select><br>"
         print '</p>'
         print '<p>'
+        if debug:
+            print '<input type="hidden" name="debug" value="1">'
         print '<input class=\"button\" type="submit" value="   OK   ">'
         print '</p></form>'
-        if (('kl' in arguments) and (arguments['kl'].value == 'all')):
+        # Help on addind icon
+        print '<a name="AddIkonSmartphone"/>\n'
+        print '<h3>Tilføj ikon til startskærm på smartphone/tablet</h3>\n'
+        print '<p>\n'
+        print '  Siden der kommer efter tryk på OK kan gemmes som ikon på forsiden af telefon/tablet.\n'
+        print '  <ul>\n'
+        print '    <li>På Android:\n'
+        print '      <ul>\n'
+        print '        <li>i Chrome: Klik på de tre prikker øverst th., vælg "Føj til startskærm"</li>\n'
+        print '        <li>i Firefox:\n'
+        print '          <ul>\n'
+        print '            <li>Klik på de tre prikker øverst th.</li>\n'
+        print '            <li>Bookmark (Stjernen)</li>\n'
+        print '            <li>Klik på "Indstillinger" nederst th. - vises kun kortvarigt</li>\n'
+        print '            <li>Klik på "Føj til startskærm"</li>\n'
+        print '          </ul>\n'
+        print '        </li>\n'
+        print '      </ul>\n'
+        print '    </li>\n'
+        print '    <li>På iPhone, og nok også iPad?:<br>\n'
+        print 'Frit efter min hukommelse er det (så tag det ikke helt bogstaveligt), har kun set det få gange<br>\n'
+        print 'Det er vist at klikke på firkantet knappen med pil op, og der kommer nogle ikoner op, og man kan scrolle frem og tilbage, og der er et ikon for tilføjelse til startskærm.\n'
+        print '</li>\n'
+        print '    <li>På Linux/Unix/Windows: Check det selv :-) - Det virker også fint der - altså ikke kun på smartphones.</li>\n'
+        print '    <li>Ellers er der denne <a href="/urlf?u=http://www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/">guide</a>.</li>\n'
+        print '</ul>\n'
+        print '</p>\n'
+
+        if (('kl' in args) and (args['kl'] == 'all')):
             pass
             print '<hr>'
             print '<p>'
@@ -262,45 +326,36 @@ def main(db, ini_file, msg=''):
             print 'Dette er kun til demonstration, og er <strong>meget</strong> langsommere end når de ønskede klasser er valgt.'
             print '</p>'
             print '<hr>'
-    if arguments:  # Arguments given, show data
+    if show_data:
         classes = getClasses(dbc)
         # Get which lektieIDs to show, either via kl=all, kl=[id1, id2, ...] or kl0=id0, kl1=id1, .., kl4=id4
         lektieIDs = [];
-        if 'kl' in arguments:
-            if arguments['kl'].value == 'all':
+        if 'kl' in args:
+            if args['kl'] == 'all':
                 lektieIDs = sorted(classes, key=classes.get)
-            elif re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', arguments['kl'].value):
+            elif re.match('^\s*\[([0-9]+,\s*)*[0-9]+\]\s*$', args['kl']):
                 # Shall be on list form [num, num, num]
                 lektieIDs = []
-                for idInt in json.loads(arguments['kl'].value):
+                for idInt in json.loads(args['kl']):
                     if idInt in classes:
                         lektieIDs.append(idInt)
         else:
-            # Sanitize arguments kl0-kl4 which classes to show for, store relevant data in lektieIDs
+            # Sanitize args kl0-kl4 which classes to show for, store relevant data in lektieIDs
             for kl in ['kl0', 'kl1', 'kl2', 'kl3', 'kl4']:
                 try:
-                    idInt = int(arguments[kl].value)
+                    idInt = int(args[kl])
                     if idInt in classes:
                         lektieIDs.append(idInt)
                 except:
                     pass
 
-        # Sanitize predays
-        try:
-            predays = int(arguments['predays'].value)
-        except:
-            predays = 1
-
-        # Sanitize days
-        try:
-            days = int(arguments['days'].value)
-        except:
-            days = 30
-
         data = getLektierEtc(dbc, lektieIDs, predays, days)
 
         # Print lektier
         print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'
+        print '    <span class="infopage"><a href="lektier.info">Info</a></span>'
+        print '    -'
+        print '    <span class="infopage"><a href="lektier?conf=1&%s%s">Lav ny opsætning</a></span></br>' % ('debug=1&' if debug else '' , urllib.urlencode(args))
         print '    <span class="fetched">Siden er hentet d. {}.</span>'.format(time.strftime("%-d.%-m. kl. %H<sup>%M</sup>"))
         print softGet(cfg, 'www', 'general_notes')
         print '<p>Lige pt. er det n&oslash;dvendigt at logge ind p&aring; for&aelig;ldre/elevintra for at se bilag - herunder kan du se hvis der er bilag.</p>'

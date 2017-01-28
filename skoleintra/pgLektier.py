@@ -44,7 +44,7 @@ def wpParseLektier(bs, id):
         match_date = ''
         if tables[0].find('h4'):
             match_date = re.search(
-                '.*?(?P<weekday>[MTOTFLS][a-z]+dag) den (?P<day>[0-9]{2})-(?P<month>[0-9]{2})-(?P<year>[0-9]{4}):',
+                u'.*?(?P<weekday>[MTOTFLS][a-zø]+dag) den (?P<day>[0-9]{2})-(?P<month>[0-9]{2})-(?P<year>[0-9]{4}):',
                 tables[0].find('h4').string)
         # DataTable - Lektier for one day, fag: Lektier in sub<table>, attachments in <menu>:, tables[1]
         fag = {}

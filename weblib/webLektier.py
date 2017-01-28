@@ -353,9 +353,9 @@ def main(db, ini_file, msg=''):
 
         # Print lektier
         print '    <h1>Lektier for', ', '.join([classes[i] for i in lektieIDs]), '</h1>'
-        print '    <span class="infopage"><a href="lektier.info">Info</a></span>'
+        print '    <span class="infopage"><a target="_blank" href="lektier.info">Info</a></span>'
         print '    -'
-        print '    <span class="infopage"><a href="lektier?conf=1&%s%s">Lav ny opsætning</a></span></br>' % ('debug=1&' if debug else '' , urllib.urlencode(args))
+        print '    <span class="infopage"><a target="_blank" href="lektier?conf=1&%s%s">Lav ny opsætning</a></span></br>' % ('debug=1&' if debug else '' , urllib.urlencode(args))
         print '    <span class="fetched">Siden er hentet d. {}.</span>'.format(time.strftime("%-d.%-m. kl. %H<sup>%M</sup>"))
         print softGet(cfg, 'www', 'general_notes')
         print '<p>Lige pt. er det n&oslash;dvendigt at logge ind p&aring; for&aelig;ldre/elevintra for at se bilag - herunder kan du se hvis der er bilag.</p>'

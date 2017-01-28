@@ -320,6 +320,7 @@ def getLektieLister(ids = config.LEKTIEIDS):
             fh = open('/tmp/lektiebog.%s.html' % id, 'w')
             fh.write(str(bs))
             fh.close()
+        #kl, lektier = wpParseLektier(bs, id)
         try:
             kl, lektier = wpParseLektier(bs, id)
         except:

@@ -313,11 +313,11 @@ def getLektieLister(ids = config.LEKTIEIDS):
         # read the initial page
         url = URL_MAIN + "ID=%d" % id
         bs = surllib.skoleGetURL(url, True, True)
-        #f = open('/tmp/a.html', 'r')
+        #f = open('/tmp/lektiebog.%s.html' % id, 'r')
         #bs = surllib.beautify(f.read())
 
         if False:
-            fh = open('/tmp/a.html', 'w')
+            fh = open('/tmp/lektiebog.%s.html' % id, 'w')
             fh.write(str(bs))
             fh.close()
         try:

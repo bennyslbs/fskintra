@@ -38,7 +38,7 @@ if enable_debug:
     import webLektier_debug
     webLektier_debug.main(
         DB, INI_FILE,
-        '<h2><font color="red">Debug version</font></h2>Pleace use the normal <a href="%s">LektieWeb</a> instead without debug=1' % __file__)
+        '<h2><font color="red">Debug version</font></h2>')
 else:
     import webLektier
     webLektier.main(
